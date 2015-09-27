@@ -18,6 +18,9 @@ handlers:
   static_dir: css
 - url: /js
   static_dir: js
+- url: /res
+  static_dir: res
+  
 # This handler tells app engine how to route requests to a WSGI application.
 - url: /.*   # This regex directs all routes to main.app
   script: main.app
@@ -31,3 +34,5 @@ handlers:
 libraries:
 - name: webapp2
   version: "2.5.2"
+- name: jinja2
+  version: latest
