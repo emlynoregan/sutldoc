@@ -117,18 +117,9 @@ var _defaultTransform =
   "transform-t": {
     "sum": {
       "!": "#*.sum_core",
-      "list": "#$"
+      "obj": "#$"
     }
   },
-  "requires": [
-    "sum_core"
-  ]
-}
-
-var _defaultTransform = 
-{
-  "language": "sUTL0",
-  "transform-t": null,
   "requires": [
     "sum_core"
   ]
