@@ -111,7 +111,7 @@ var setStoredText = function(aKey, aValue)
 
 var _defaultSource = [1, 2, 3, 4]
 
-var _xdefaultTransform = 
+var _defaultTransform = 
 {
   "language": "sUTL0",
   "transform-t": {
