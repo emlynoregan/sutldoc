@@ -1,0 +1,11 @@
+.ss-detail{
+  display: none;
+}
+
+.ss-show{
+  display: block;
+}
+
+.ss-item{
+  padding: 10px;
+}

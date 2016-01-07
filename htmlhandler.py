@@ -9,9 +9,13 @@ jinja_environment = jinja2.Environment(
     )
 
 class HtmlHandler(webapp2.RequestHandler):
-	def get(self, aName):
-		ltemplate = self.getTemplate(aName)
-		self.response.out.write(ltemplate.render({}))
+  def get(self, aName=None):
+    ltemplate = self.getTemplate(aName if aName else "studio")
+    self.response.out.write(ltemplate.render({}))
 
-	def getTemplate(self, aName):
-		return jinja_environment.get_template("%s.html" % aName)
+  def getTemplate(self, aName):
+    return jinja_environment.get_template("%s.html" % aName)
+		
+# class RedirectHandler(webapp2.RequestHandler):
+# 	def get(self, aName):
+# 		self.redirect("/doc/%s" % aName)

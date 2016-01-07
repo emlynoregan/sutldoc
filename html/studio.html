@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <title>
+		sUTL Studio
+    </title>  
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="css/easyui.css">
+    <link rel="stylesheet" type="text/css" href="css/studio.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.0/mustache.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+  </head>
+  <body>
+    <form>
+    <div id="layoutMain" class="easyui-layout" style="width:100%;height:350px">
+        <div data-options="region:'north'" style="height:50px;padding:10px">
+          <strong>sUTL Studio</strong>
+          by Emlyn O'Regan
+        </div>
+        <div data-options="region:'south',split:true" style="height:50px;"></div>
+        <div data-options="region:'west',split:true,collapsible:false" title="Main" style="width:200px">
+          <ul id="tvMain" class="easyui-tree">
+            <li id="tvMainRoot">
+                <span>Declarations</span>
+            </li>
+          </ul>
+        </div>
+        <div data-options="region:'center',title:'Detail'">
+          <div id="rootdetail" class="ss-detail ss-show">
+            root
+          </div>
+          <div id="distdetail" class="ss-detail">
+            <form id="distForm" method="post">
+                <div class="ss-item">
+                    <label for="name">Name:</label>
+                    <input id="vbDistName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname'" />
+                </div>
+                <div class="ss-item">
+                  <label for="published">Published:</label>
+					   <input id="sbDistPublished" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">
+                </div>
+            </form>
+          </div>
+          <div id="decldetail" class="ss-detail">
+            decl
+          </div>
+        </div>
+    </div>
+    </form>
+    <script type="text/javascript" src="js/model.js"></script>
+    <script type="text/javascript" src="js/data.js"></script>
+    <script type="text/javascript" src="js/selectioncontroller.js"></script>
+    <script type="text/javascript" src="js/distcontroller.js"></script>
+    <script type="text/javascript" src="js/treecontroller.js"></script>
+    <script type="text/javascript" src="js/sUTL.js"></script>
+    <script type="text/javascript" src="js/model.sUTL.js"></script>
+    <script type="text/javascript" src="js/tree.sUTL.js"></script>
+    <script type="text/javascript" src="js/data.sUTL.js"></script>
+    <script type="text/javascript" src="js/core.sUTL.js"></script>
+    <script type="text/javascript" src="js/studio.js"></script>
+   </body>
+</html>
