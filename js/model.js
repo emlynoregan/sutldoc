@@ -1,4 +1,4 @@
-/*globals sUTLevaluateDecl */
+/*globals sUTLevaluateDecl crapguid*/
 
 /*eslint-env meteor */
 
@@ -27,6 +27,15 @@ var _doNotify = function (aNotifyObj)
 		aObserverF(aNotifyObj);
 	});
 };
+
+var NotifyLoaded = function()
+{
+	_doNotify({
+		type: "loaded",
+		tree: gmodelTree
+	});
+};
+
 var NotifyTreeReplace = function()
 {
 	_doNotify({
@@ -67,17 +76,24 @@ var NotifyNodeUpdated = function(aNode)
 	});
 };
 
-////////////// Model manipulation
-var GetModelNodeById = function(aNodeId)
+var NotifyNodeDeleted = function(aNodeId)
 {
-	return sUTLevaluateDecl({
-		id: aNodeId,
-		node: gmodelTree
-	}, 
-	"getmodelnodebyid");
+	_doNotify({
+		type: "nodedeleted",
+		nodeid: aNodeId
+	});
 };
 
-var SetModelNode = function(aNode)
+var NotifyNodeAdded = function(aNode)
+{
+	_doNotify({
+		type: "nodeadded",
+		node: aNode
+	});
+};
+
+////////////// Model manipulation
+var _modelSetNode = function(aNode)
 {
 	gmodelTree = sUTLevaluateDecl({
 		"newnode": aNode,
@@ -86,7 +102,20 @@ var SetModelNode = function(aNode)
 		"setmodelnodebyid");
 };
 
-var AddChildrenToModelNode = function(aModelNode, aChildList)
+///////////////////////
+/// external api
+///////////////////////
+
+var modelGetNodeById = function(aNodeId)
+{
+	return sUTLevaluateDecl({
+		id: aNodeId,
+		node: gmodelTree
+	}, 
+	"getmodelnodebyid");
+};
+
+var modelAddChildrenToModelNode = function(aModelNode, aChildList)
 {
 	var lnewModelNode = sUTLevaluateDecl({
 			"node": aModelNode,
@@ -94,31 +123,44 @@ var AddChildrenToModelNode = function(aModelNode, aChildList)
 		}, 
 		"addchildrentomodelnode");
 
-	SetModelNode(lnewModelNode);
+	_modelSetNode(lnewModelNode);
 		
 	NotifyNodeExpanded(lnewModelNode);
 };
 
-var SetSelectedModelNode = function(aNodeId)
+var modelReplaceNode = function(aNode)
 {
-	var lnode = GetModelNodeById(aNodeId);
+	var lexistingNode = modelGetNodeById(aNode.id);
+	
+	if (!(lexistingNode && lexistingNode.state === "updated"))
+	{
+		_modelSetNode(aNode);
+				
+		NotifyNodeUpdated(aNode);
+	}
+};
+
+var modelSetSelectedNode = function(aNodeId)
+{
+	var lnode = modelGetNodeById(aNodeId);
 	
 	gselectedNode = lnode;
 	
 	NotifyNodeSelected(lnode);
 };
 
-var InitialiseModelTree = function()
+var modelInitialiseTree = function()
 {
 	gmodelTree = sUTLevaluateDecl(null, "constructroot");
 	
 	NotifyTreeReplace();
-	SetSelectedModelNode(gmodelTree);
+	
+	modelSetSelectedNode("root");
 };
 
-var UpdateNode = function(aNodeId, aNodeDiff)
+var modelUpdateNode = function(aNodeId, aNodeDiff)
 {
-	var lnode = GetModelNodeById(aNodeId);
+	var lnode = modelGetNodeById(aNodeId);
 	
 	if (lnode)
 	{
@@ -129,15 +171,50 @@ var UpdateNode = function(aNodeId, aNodeDiff)
 			"applynewdiff"
 		);
 		
-		SetModelNode(lnewModelNode);
+		_modelSetNode(lnewModelNode);
 			
 		NotifyNodeUpdated(lnewModelNode);
 	}
 };
 
-var ReplaceNode = function(aNode)
+var modelDeleteNode = function(aNodeId)
 {
-	SetModelNode(aNode);
+	var lnode = modelGetNodeById(aNodeId);
+	
+	if (lnode)
+	{
+		lnode.state = "deleted"; // do I need to mark all children "deleted" too?
 			
-	NotifyNodeUpdated(aNode);
+		NotifyNodeDeleted(aNodeId);
+	}
+};
+
+var modelAddDistNode = function(aParentNodeId)
+{
+	var lparentNode = modelGetNodeById(aParentNodeId);
+	
+	if (lparentNode)
+	{
+		var lnewNode = sUTLevaluateDecl({
+			"item": {
+				"name": "newdist",
+				"id": crapguid(),
+				"published": false
+			}
+		}, "constructdist");
+		
+		lnewNode.state = "added";
+
+		var lnewParentNode = sUTLevaluateDecl({
+				"node": lparentNode,
+				"children": [lnewNode]
+			}, 
+			"addchildrentomodelnode");
+
+		_modelSetNode(lnewParentNode);
+			
+		lnewNode = modelGetNodeById(lnewNode.id); // reload to get full info
+		
+		NotifyNodeAdded(lnewNode);
+	}
 };

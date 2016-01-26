@@ -13,25 +13,30 @@ var gdataDist =
 	  "requires": ["removenulls"]
 	},
 	{
-	  "name": "addidtodatum_data_studio_emlynoregan_com",
-	  "transform-t": {
-	  	"&": "addmaps",
-	  	"map1": "^@",
-	  	"map2": {
-	  	  "id": {
-	  	  	"&": "join",
-	  	  	"list": {
-	  	  	  "&": "removenulls",
-	  	  	  "list": [
-	  	  	    "^@.name",
-	  	  	    "^@.parent"
-	  	  	  ]
-	  	  	},
-	  	  	"separator": "_"
-	  	  }
-	  	}
+	  "name": "addidstodata_data_studio_emlynoregan_com",
+	  "language": "sUTL0",
+	  "args": {
+	  	"dict": "the dictionary to transform"
 	  },
-	  "requires": ["addmaps", "join", "removenulls"]
+	  "transform-t": 
+	  {
+  	    "&": "makemap",
+  	    "value": {
+  	      "&": "map_core",
+  	      "list": {"&": "keys", "map": "^@.dict"},
+  	      "t": {":": [
+  	        "^@.item",
+  	        {
+  	          "&": "addmaps",
+  	          "map1": ["^%", "^@.dict", "^@.item"],
+  	          "map2": {"id": "^@.item"}
+  	        }
+  	      ]}
+  	    }
+	  },
+	  "requires": [
+	    "map_core", "addmaps"
+	  ]
 	},
 	{
 	  "name": "distmodeltodata_data_studio_emlynoregan_com",
@@ -44,8 +49,63 @@ var gdataDist =
 	      "&": "coalesce",
 	      "list": ["^@.model.published", "^@.data.published"]
 	    },
-	    "parent": "^@.data.parent"
+	    "parent": {
+	      "&": "coalesce",
+	      "list": ["^@.model.parent", "^@.data.parent"]
+	    },
+	    "id": {
+	      "&": "coalesce",
+	      "list": ["^@.model.id", "^@.data.id"]
+	    }
 	  },
 	  "requires": ["coalesce"]
-	}
+	},
+  {
+    "name": "getalldatanodesforparent_data_studio_emlynoregan_com",
+    "language": "sUTL0",
+    "args": {
+      "dict": "the dictionary of datanodes by id",
+      "parent": "id of the parent to use, or null for root",
+      "item-t": "transform to apply to all result dists"
+    },
+    "transform-t": 
+    {
+        "&": "map_core",
+        "list":
+        {
+          "&": "filter",
+          "list": 
+          {
+            "&": "values",
+            "map": {
+              "&": "addidstodata"
+            }
+          },
+          "filter-t": {":": {
+            "&": "if",
+            "cond": {":": "^@.parent"},
+            "true": {":": 
+              [
+                "&=",
+                "^@.item.parent",
+                "^@.parent"
+              ]
+            },
+            "false": {":": [
+              "&!",
+              "^@.item.parent"
+            ]}
+          }}
+        },
+        "t": {":": {
+          "&": "if",
+          "cond": {":": "^@.item-t"},
+          "true": {":": {"!": {"!": "^@.item-t"}}},
+          "false": {":": "Internal error: item-t not provided"}
+        }}
+    },
+    "requires": [
+      "map_core", "addmaps", "filter", "addidstodata"
+    ]
+  }
 ];

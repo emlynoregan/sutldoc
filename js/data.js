@@ -1,173 +1,167 @@
 
-/*eslint-env meteor */
+/*eslint-env meteor, browser*/
 
-/*globals RegisterModelObserver sUTLevaluateDecl GetModelNodeById AddChildrenToModelNode NotifyNodeExpanded ReplaceNode*/
+/*globals RegisterModelObserver sUTLevaluateDecl modelGetNodeById modelAddChildrenToModelNode NotifyNodeExpanded modelReplaceNode*/
 
-var _dists = {
-  "emlynoregan_com": {
-    "name": "emlynoregan_com",
-    "published": false
-  },
-  "core_emlynoregan_com": {
-    "name": "core",
-    "published": true,
-    "parent": "emlynoregan_com"
-  },
-  "working_emlynoregan_com": {
-    "name": "working",
-    "published": false,
-    "parent": "emlynoregan_com"
-  }
-};
-
-var _decls = {
-  "map_core_emlynoregan_com": {
-    "name": "map",
-    "published": true,
-    "decl": {
-      "language": "sUTL0",
-      "transform-t": "map code"
-    },
-    "parent": "core_emlynoregan_com"
-  },
-  "filter_core_emlynoregan_com": {
-    "name": "filter",
-    "published": true,
-    "decl": {
-      "language": "sUTL0",
-      "transform-t": "filter code"
-    },
-    "parent": "core_emlynoregan_com"
-  }
-};
-
-
-var GetDistByName = function(aName)
-{
-  return _dists[aName];
-}
-
-var SetDistByName = function(aName, aDist)
-{
-  _dists[aName] = aDist;
-};
-
-var DeleteDistByName = function(aName)
-{
-  _dists[aName] = null;
-};
-
-var GetAllDistsForParent = function(aParentName)
-{
-  return _.map(
-	  _.filter(
-	    _dists, 
-	    function(aDist) {
-	      if (aParentName)
-	      {
-		   	 return aDist.parent === aParentName;
-	      }
-	      else
-	      {
-	         return !aDist.parent;
-	      }
-	    }
-	  ),
-	  function(aDataDist) {
-	  	return sUTLevaluateDecl(sUTLevaluateDecl(aDataDist, "addidtodatum"), "constructdist");
-      }
-  );
-};
-
-var GetDecl = function(aFullName)
-{
-  return _decls[aFullName];
-}
-
-var SetDecl = function(aFullName, aDecl)
-{
-  _decls[aFullName] = aDecl;
-};
-
-var DeleteDecl = function(aName)
-{
-  _decls[aName] = null;
-};
-
-var GetAllDeclsForParent = function(aParentName)
-{
-  return _.map(
-	  _.filter(
-	    _decls, 
-	    function(aDist) {
-	      if (aParentName)
-	      {
-		   	 return aDist.parent === aParentName;
-	      }
-	      else
-	      {
-	         return !aDist.parent;
-	      }
-	    }
-	  ),
-	  function(aDataDist) {
-	  	return sUTLevaluateDecl(sUTLevaluateDecl(aDataDist, "addidtodatum"), "constructdecl");
-      }
-  );
-};
-
-var fullDistName = function(aName, aParentName)
-{
-  if (aParentName)
-    return aName + "_" + aParentName;
-  else
-    return aName;
-};
-
-var distNameIsAvailable = function(aDistName, aNodeId)
-{
-  var ldistNode = _dists[aNodeId];
-  
-  if (ldistNode)
-  {
-	  return !_dists[fullDistName(aDistName, ldistNode.parent)];
-  }
-  else
-  {
-	  return !_dists[aDistName];
-  }
-};
-
-var distNameChange = function(aOldDistName, aNewDistName, aParentName)
-{
-  if (!_dists[fullDistName(aNewDistName, aParentName)])
-  {
-    var ldist = _dists[fullDistName(aOldDistName, aParentName)];
-    delete _dists[fullDistName(aOldDistName, aParentName)];
-    _dists[fullDistName(aNewDistName, aParentName)] = ldist;
-  }
-};
-
-var loadNodeChildren = function(aNode)
-{
-	if (aNode)
+var _dists = sUTLevaluateDecl(
 	{
-		var lmodelNode = GetModelNodeById(aNode.id);
-		
-		if (lmodelNode)
+		"dict": {
+		  "eeeeeeeeee": {
+		    "name": "emlynoregan_com",
+		    "published": false
+		  },
+		  "cccccccccccccc": {
+		    "name": "core",
+		    "published": true,
+		    "parent": "eeeeeeeeee"
+		  },
+		  "wwwwwwwwwwwww": {
+		    "name": "working",
+		    "published": false,
+		    "parent": "eeeeeeeeee"
+		  }
+	  }
+	},
+	"addidstodata"
+);
+
+var _decls = sUTLevaluateDecl(
+	{
+		"dict": {
+		  "mmmmmmmmmmmmm": {
+		    "name": "map",
+		    "published": true,
+		    "decl": {
+		      "language": "sUTL0",
+		      "transform-t": "map code"
+		    },
+		    "parent": "cccccccccccccc"
+		  },
+		  "ffffffffffff": {
+		    "name": "filter",
+		    "published": true,
+		    "decl": {
+		      "language": "sUTL0",
+		      "transform-t": "filter code"
+		    },
+		    "parent": "cccccccccccccc"
+		  }
+	  }
+	},
+	"addidstodata"
+);
+
+// simulated server calls
+var GetDistById = function(aId)
+{
+  return _dists[aId];
+};
+//
+//var GetDistByName = function(aName, aParentId)
+//{
+//  var retval = null;
+//  
+//  for (var lkey in _dists)
+//  {
+//  	var ldistNode = _dists[lkey];
+//  	if (ldistNode.name === aName && ldistNode.parent === aParentId)
+//  	{
+//  		retval = ldistNode;
+//  		break;
+//  	}
+//  }
+//
+//  return retval;
+//};
+
+var SetDistById = function(aId, aDist)
+{
+  _dists[aId] = aDist;
+};
+
+var GetAllDistsForParent = function(aParentId)
+{
+	return sUTLevaluateDecl(
 		{
-			var lparentId = aNode.id;
-			if (lparentId === "root")
-				lparentId = null;
-				
-			var lchildDists = GetAllDistsForParent(lparentId); 
+			"dict": _dists,
+			"parent": aParentId,
+			"item-t": "^*.constructdist"
+		},
+		"getalldatanodesforparent",
+		["constructdist"]
+	);
+};
+
+var GetDeclById = function(aId)
+{
+  return _decls[aId];
+}
+
+var SetDeclById = function(aId, aDecl)
+{
+  _decls[aId] = aDecl;
+};
+
+var GetAllDeclsForParent = function(aParentId)
+{
+	return sUTLevaluateDecl(
+		{
+			"dict": _decls,
+			"parent": aParentId,
+			"item-t": "^*.constructdecl"
+		},
+		"getalldatanodesforparent",
+		["constructdecl"]
+	);
+};
+
+var _dataGetAllChildrenForParent = function(aParentId)
+{
+	var lchildDists = GetAllDistsForParent(aParentId); 
+	
+	var lchildDecls = GetAllDeclsForParent(aParentId);
+	
+	var lchildren = sUTLevaluateDecl({"lists": [lchildDists, lchildDecls]}, "combinelists");
+	
+	return lchildren;
+}
+
+var _dataGetNodeById = function(aId)
+{
+	var retval = GetDeclById(aId);
+	if (!retval)
+	{
+		retval = GetDistById(aId);
+	}
+	return retval;
+}
+
+
+//var fullDistName = function(aName, aParentId)
+//{
+//  var lparentNode = GetDistById(aParentId);
+//  if (lparentNode) 
+//    return aName + "_" + lparentNode.name;
+//  else
+//    return aName;
+//};
+
+///////////////////////
+/// external api
+///////////////////////
+
+var dataLoadNodeChildren = function(aNodeId)
+{
+	if (aNodeId)
+	{
+		var lparentId = aNodeId;
+
+		if (lparentId === "root")
+			lparentId = null;
 			
-			var lchildDecls = GetAllDeclsForParent(lparentId);
-			
-			var lchildren = sUTLevaluateDecl({"lists": [lchildDists, lchildDecls]}, "combinelists");
-			
-			AddChildrenToModelNode(lmodelNode, lchildren);
-		}
+		var lchildren = _dataGetAllChildrenForParent(lparentId);
+		
+		modelAddChildrenToModelNode(modelGetNodeById(aNodeId), lchildren);
 	}	
 };
 
@@ -175,7 +169,7 @@ var dataUpdateNode = function (aModelNode)
 {
 	if (aModelNode && aModelNode.state === "updated")
 	{
-		var ldistNode = GetDistByName(aModelNode.id);
+		var ldistNode = GetDistById(aModelNode.id);
 		
 		if (ldistNode)
 		{
@@ -186,31 +180,87 @@ var dataUpdateNode = function (aModelNode)
 				"distmodeltodata"
 			);
 
-			SetDistByName(lnewDistNode);
-//			if (ldistNode.name !== lnewDistNode.name)
-//			{
-//				distNameChange(ldistNode.name, lnewDistNode.name, lnewDistNode.parent);
-//			}
+			SetDistById(aModelNode.id, lnewDistNode);
 
 			delete aModelNode["state"];
-//			aModelNode.id = fullDistName(lnewDistNode.name, lnewDistNode.parent);
 			
-			ReplaceNode(aModelNode);
+			modelReplaceNode(aModelNode);
 		}
 	}
 };
 
-RegisterModelObserver("data", function(aNotifyObj)
+var dataDeleteNode = function (aNodeId)
 {
-	if (aNotifyObj)
+	if (aNodeId)
 	{
-		if (aNotifyObj.type === "expandnode")
+		var lnode = _dataGetNodeById(aNodeId);
+		
+		if (lnode)
 		{
-			loadNodeChildren(aNotifyObj.node);
-		}
-		else if (aNotifyObj.type === "nodeupdated")
-		{
-			dataUpdateNode(aNotifyObj.node);
+			var lchildren = _dataGetAllChildrenForParent(aNodeId);
+	
+			lchildren.push(lnode);
+			
+			for (var lix in lchildren)
+			{
+				var ldelNode = lchildren[lix];
+				
+				delete _dists[ldelNode.id];
+				delete _decls[ldelNode.id];
+			}
 		}
 	}
+};
+
+var dataAddNode = function (aModelNode)
+{
+	if (aModelNode && aModelNode.state === "added")
+	{
+		var ldistNode = GetDistById(aModelNode.id);
+		
+		if (!ldistNode)
+		{
+			var lnewDistNode = sUTLevaluateDecl({
+					"model": aModelNode
+				},
+				"distmodeltodata"
+			);
+
+			SetDistById(aModelNode.id, lnewDistNode);
+
+			delete aModelNode["state"];
+			
+			modelReplaceNode(aModelNode);
+		}
+	}
+};
+
+
+RegisterModelObserver("data", function(aNotifyObj)
+{
+	window.setTimeout(
+		function ()
+		{
+			if (aNotifyObj)
+			{
+				if (aNotifyObj.type === "expandnode")
+				{
+					dataLoadNodeChildren(aNotifyObj.node.id);
+				}
+				else if (aNotifyObj.type === "nodeupdated")
+				{
+					dataUpdateNode(aNotifyObj.node);
+				}
+				else if (aNotifyObj.type === "nodedeleted")
+				{
+					dataDeleteNode(aNotifyObj.nodeid);
+				}
+				else if (aNotifyObj.type === "nodeadded")
+				{
+					dataAddNode(aNotifyObj.node);
+				}
+			}
+		}, 
+		1000
+	);
 });

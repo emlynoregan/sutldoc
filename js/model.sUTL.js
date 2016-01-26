@@ -82,78 +82,52 @@ var gmodelDist =
 	    "&": "addmaps",
 	    "map1": "^@.node",
 	    "map2": {
-	      "children": "^@.children"
+	      "children": 
+	      {
+	      	"&": "removenulls",
+	      	"list": [
+	      	  "&&",
+	      	  "^@.node.children",
+		      {
+		      	"&": "map",
+		      	"list": "^@.children",
+		      	"t": {":": {
+		      		"&": "addmaps",
+		      		"map1": "^@.item",
+		      		"map2": {
+		      			"parent": "^@.node.id"
+		      		}
+		      	}}
+	      	  }
+      	    ]
+  	      }
 	    }
 	  },
-	  "requires": ["addmaps"]
+	  "requires": ["addmaps", "map", "removenulls"]
 	},
 	{
 	  "name": "constructdist_model_studio_emlynoregan_com",
+	  "args": {
+	  	"item": "the item to transform"
+	  },
 	  "transform-t": {
-	    "name": "^@.name",
-	    "id": "^@.id",
+	    "name": "^@.item.name",
+	    "id": "^@.item.id",
 	    "type": "dist",
-	    "published": "^@.published"
+	    "published": "^@.item.published"
 	  }
 	},
 	{
 	  "name": "constructdecl_model_studio_emlynoregan_com",
+	  "args": {
+	  	"item": "the item to transform"
+	  },
 	  "transform-t": {
-	    "name": "^@.name",
-	    "id": "^@.id",
+	    "name": "^@.item.name",
+	    "id": "^@.item.id",
 	    "type": "decl",
 	    "requiresdists": [],
-	    "published": "^@.published"
+	    "published": "^@.item.published"
 	  }
-	},
-	{
-	  "name": "adddecltodist_model_studio_emlynoregan_com",
-	  "transform-t": {
-	    "&": "addmaps",
-	    "map1": "^@.dist",
-	    "map2": {
-	    	"!": {":": {
-	    		"childdecls": "^@.childdecls",
-	    		"children": [
-	    			"&&",
-	    			"^@.dist.childdists",
-	    			"^@.childdecls"
-	    		]
-	    	}},
-	    	"childdecls": [
-		        "&&",
-		        "^@.dist.childdecls",
-		        [{
-		          "&": "addmaps",
-		          "map1": "^@.decl",
-		          "map2": {
-		            "parentid": "^@.dist.id"
-		          }
-		        }]
-			]
-		}
-	  },
-	  "requires": ["addmaps"]
-	},
-	{
-	  "name": "adddisttodist_model_studio_emlynoregan_com",
-	  "transform-t": {
-	    "&": "addmaps",
-	    "map1": "^@.dist1",
-	    "map2": {
-	      "childdists": [
-	        "&&",
-	        "^@.dist.childdists",
-	        [{
-	          "&": "addmaps",
-	          "map1": "^@.dist2",
-	          "map2": {
-	            "parentid": "^@.dist1.id"
-	          }
-	        }]
-	      ]
-	    }
-	  },
-	  "requires": ["addmaps"]
 	}
 ];

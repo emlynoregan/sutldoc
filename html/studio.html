@@ -15,10 +15,21 @@
   <body>
     <form>
     <div id="layoutMain" class="easyui-layout" style="width:100%;height:350px">
-        <div data-options="region:'north'" style="height:50px;padding:10px">
-          <strong>sUTL Studio</strong>
-          by Emlyn O'Regan
-        </div>
+        <div data-options="region:'north'" style="height:30px;">
+		    <div class="easyui-panel" style="border:0;">
+		        <a href="#" class="easyui-linkbutton" data-options="plain:true">sUTL Studio</a>
+		        <a href="#" class="easyui-menubutton" data-options="menu:'#mm1'">Tree</a>
+		        <a href="#" class="easyui-menubutton" data-options="menu:'#mm2'">Help</a>
+		    </div>
+		    <div id="mm1" style="width:150px;">
+		        <div id="menuRefresh">Refresh</div>
+		        <div id="menuAddDist">Add Distribution</div>
+		        <div id="menuDelete" data-options="iconCls:'icon-del'">Delete</div>
+		    </div>
+		    <div id="mm2" style="width:100px;">
+		        <div id="menuAbout">About</div>
+		    </div>
+		</div>
         <div data-options="region:'south',split:true" style="height:50px;"></div>
         <div data-options="region:'west',split:true,collapsible:false" title="Main" style="width:200px">
           <ul id="tvMain" class="easyui-tree">
@@ -47,18 +58,22 @@
             decl
           </div>
         </div>
+		<div id="windowAbout" class="easyui-window" title="About sUTL Studio" data-options="iconCls:'icon-save',closed:true" style="width:500px;height:200px;padding:10px;">
+	        sUTL Studio v0.1
+	    </div>
     </div>
     </form>
     <script type="text/javascript" src="js/model.js"></script>
-    <script type="text/javascript" src="js/data.js"></script>
     <script type="text/javascript" src="js/selectioncontroller.js"></script>
     <script type="text/javascript" src="js/distcontroller.js"></script>
     <script type="text/javascript" src="js/treecontroller.js"></script>
+    <script type="text/javascript" src="js/menucontroller.js"></script>
     <script type="text/javascript" src="js/sUTL.js"></script>
     <script type="text/javascript" src="js/model.sUTL.js"></script>
     <script type="text/javascript" src="js/tree.sUTL.js"></script>
     <script type="text/javascript" src="js/data.sUTL.js"></script>
     <script type="text/javascript" src="js/core.sUTL.js"></script>
     <script type="text/javascript" src="js/studio.js"></script>
+    <script type="text/javascript" src="js/data.js"></script>
    </body>
 </html>

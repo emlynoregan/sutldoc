@@ -1,5 +1,5 @@
 
-/*globals sUTL gcoreDist gstudioDist updateDetail expandNode updateTree InitialiseModelTree gmodelDist gtreeDist gdataDist clickNode*/
+/*globals sUTL gcoreDist gstudioDist updateDetail treeExpandNode updateTree gmodelDist gtreeDist gdataDist treeClickNode modelInitialiseTree NotifyLoaded*/
 
 /*eslint-env jquery, browser*/
 
@@ -9,24 +9,23 @@
 //]
 //    
 
+function crapguid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
 
 var setHeight = function(){
   var c = $('#layoutMain');
   c.layout('resize',{
-      height: (window.innerHeight-20)
+      height: (window.innerHeight-30)
   });
 };
 
-var onClickHandler = function(node)
-{
-  clickNode(node);
-};
-
-var onExpandHandler = function(node)
-{
-  expandNode(node);
-};
- 
 var lsUTLLibDists = [];
 
 var loadsUTLDists = function()
@@ -37,15 +36,24 @@ var loadsUTLDists = function()
 	lsUTLLibDists.push(gdataDist);
 };
 
-var sUTLevaluateDecl= function(aSource, aDeclName)
+loadsUTLDists();
+
+var sUTLevaluateDecl= function(aSource, aDeclName, aRequiresDeclNames)
 {
 	var lresult = null;
+	
+	var lrequires = [aDeclName];
+	if (aRequiresDeclNames)
+	{
+		lrequires = lrequires.concat(aRequiresDeclNames);
+	}
 	var ldecl = {
 		"transform-t": {
 		  "&": aDeclName
 		}, 
-		"requires": [aDeclName]}
-	;
+		"requires": lrequires
+	};
+
     var clresult = sUTL.compilelib([ldecl], lsUTLLibDists, false);
 
     if (!clresult)
@@ -67,8 +75,6 @@ var sUTLevaluateDecl= function(aSource, aDeclName)
 
 $(
   function(){
-  	loadsUTLDists();
-  	
 	$(window).resize(function() {
 	 	setHeight();    
 	});
@@ -77,12 +83,22 @@ $(
     
     $('#tvMain').tree(
       {
-         onClick: onClickHandler,
-         onBeforeExpand: onExpandHandler,
+        onClick: function(node)
+		{
+		  treeClickNode(node);
+		},
+        onBeforeExpand: function(node)
+		{
+		  treeExpandNode(node);
+		}
       }
     );    
 
-	InitialiseModelTree();    
+    $('#menuAbout').bind('click', function(){
+		$('#windowAbout').window('open');  // open a window
+    });
+
+	modelInitialiseTree();    
   }
 );
 

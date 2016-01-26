@@ -1,14 +1,15 @@
 /*eslint-env jquery */
 
-/*globals RegisterModelObserver */
-var getCenterPanel = function()
+/*globals RegisterModelObserver distUpdateDistDetail*/
+
+var selGetCenterPanel = function()
 {
   return $('#layoutMain').layout('panel', 'center');
 };
 
-var setCenterPanelTitle = function(aTitle, aUpdated)
+var selSetCenterPanelTitle = function(aTitle, aUpdated)
 {
-  var lpanel = getCenterPanel();
+  var lpanel = selGetCenterPanel();
   var ltitle = aTitle;
   if (aUpdated)
   {
@@ -17,46 +18,46 @@ var setCenterPanelTitle = function(aTitle, aUpdated)
   lpanel.panel('setTitle', ltitle);
 };
 
-var updateRootDetail = function()
+var selUpdateRootDetail = function()
 {
   $("#rootdetail").show();
   $("#distdetail").hide();
   $("#decldetail").hide();
-  setCenterPanelTitle("Root");
+  selSetCenterPanelTitle("Root");
 };
 
-var updateDistDetail = function(aNode)
+var selUpdateDistDetail = function(aNode)
 {
   $("#rootdetail").hide();
   $("#distdetail").show();
   $("#decldetail").hide();
-  setCenterPanelTitle("Distribution");
+  selSetCenterPanelTitle("Distribution");
 
-  dc_UpdateDistDetail(aNode);
+  distUpdateDistDetail(aNode);
 };
 
-var updateDeclDetail = function(aNode)
+var selUpdateDeclDetail = function(aNode)
 {
   $("#rootdetail").hide();
   $("#distdetail").hide();
   $("#decldetail").show();
-  setCenterPanelTitle("Declaration");
+  selSetCenterPanelTitle("Declaration");
 };
 
-var updateDetail = function(aNode)
+var selUpdateDetail = function(aNode)
 {
   if (aNode)
   {
     if (aNode.type === "dist")
-        updateDistDetail(aNode);
+        selUpdateDistDetail(aNode);
     else if (aNode.type === "decl")
-        updateDeclDetail(aNode);
+        selUpdateDeclDetail(aNode);
     else
-        updateRootDetail(aNode);
+        selUpdateRootDetail(aNode);
   }
   else
   {
-    updateRootDetail(aNode);
+    selUpdateRootDetail(aNode);
   }
 };
 
@@ -66,7 +67,7 @@ RegisterModelObserver("selection", function(aNotifyObj)
 	{
 		if (aNotifyObj.type === "nodeselected")
 		{
-			updateDetail(aNotifyObj.node);
+			selUpdateDetail(aNotifyObj.node);
 		}
 	}
 });

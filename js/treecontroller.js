@@ -1,8 +1,8 @@
 
 /*eslint-env jquery, node*/
-/*globals RegisterModelObserver sUTLevaluateDecl NotifyExpandNode GetModelNodeById SetSelectedModelNode*/
+/*globals RegisterModelObserver sUTLevaluateDecl NotifyExpandNode GetModelNodeById SetSelectedModelNode modelSetSelectedNode modelGetNodeById*/
 
-var loadTree = function(aTreeId, aTree)
+var _treeLoadTree = function(aTreeId, aTree)
 {
 	if (aTree)
 	{
@@ -17,11 +17,25 @@ var updateTreeNodeChildren = function(aTreeId, aTreeNode, aModelNode)
 	if (aTreeId && aTreeNode && aModelNode)
 	{
 		var ltreeViewJson = sUTLevaluateDecl({node: aModelNode}, "modeltotreeview");
+		
+		var lchildTreeNodes = $('#' + aTreeId).tree('getChildren', aTreeNode.target);
+		
+		for (var lix in lchildTreeNodes)
+		{
+			var lchildTreeNode = lchildTreeNodes[lix];
+			
+			$('#' + aTreeId).tree('remove', lchildTreeNode.target);
+		}
+
 	
 		$('#' + aTreeId).tree('append', {
 			parent: aTreeNode.target,
 			data: ltreeViewJson.children
 		});
+		
+		$('#' + aTreeId).tree('collapse', aTreeNode.target);
+		$('#' + aTreeId).tree('expand', aTreeNode.target);
+		
 	}	
 };
 
@@ -38,13 +52,21 @@ var updateTreeNode = function(aTreeId, aTreeNode, aModelNode)
 	}	
 };
 
+var deleteTreeNode = function(aTreeId, aTreeNode, aNodeId)
+{
+	if (aTreeId && aTreeNode && aNodeId)
+	{
+		$('#' + aTreeId).tree('remove', aTreeNode.target);
+	}	
+};
+
 var GetTreeNodeById = function(aTreeId, aNodeId)
 {
 	return $('#' + aTreeId).tree('find', aNodeId);
 };
 
 
-var nodeExpanded = function(aTreeId, aNode)
+var _treeNodeExpanded = function(aTreeId, aNode)
 {
   if (aNode && aNode.id)
   {
@@ -57,7 +79,7 @@ var nodeExpanded = function(aTreeId, aNode)
   }
 };
 
-var nodeUpdated = function(aTreeId, aNode)
+var _treeNodeUpdated = function(aTreeId, aNode)
 {
   if (aNode && aNode.id)
   {
@@ -70,31 +92,38 @@ var nodeUpdated = function(aTreeId, aNode)
   }
 };
 
-
-RegisterModelObserver("tree", function(aNotifyObj)
+var _treeNodeDeleted = function(aTreeId, aNodeId)
 {
-	if (aNotifyObj)
-	{
-		if (aNotifyObj.type === "treereplace")
-		{
-			loadTree("tvMain", aNotifyObj.tree);
-		}
-		else if (aNotifyObj.type === "nodeexpanded")
-		{
-			nodeExpanded("tvMain", aNotifyObj.node);
-		}
-		else if (aNotifyObj.type === "nodeupdated")
-		{
-			nodeUpdated("tvMain", aNotifyObj.node);
-		}
-	}
-});
+  if (aNodeId)
+  {
+  	var ltreeNode = GetTreeNodeById(aTreeId, aNodeId);
+  	
+  	if (ltreeNode)
+  	{
+  		deleteTreeNode(aTreeId, ltreeNode, aNodeId);
+  	}
+  }
+};
 
-var expandNode = function(aNode)
+var _treeNodeAdded = function(aTreeId, aNewModelNode)
+{
+  if (aNewModelNode)
+  {
+  	var ltreeParentNode = GetTreeNodeById(aTreeId, aNewModelNode.parent);
+  	var lmodelParentNode = modelGetNodeById(aNewModelNode.parent);
+  	
+  	if (ltreeParentNode && lmodelParentNode)
+  	{
+		updateTreeNodeChildren(aTreeId, ltreeParentNode, lmodelParentNode);
+  	}
+  }
+};
+
+var treeExpandNode = function(aNode)
 {
   if (aNode)
   {
-  	  var lmodelNode = GetModelNodeById(aNode.attributes.node.id);
+  	  var lmodelNode = modelGetNodeById(aNode.attributes.node.id);
 
 	  if (lmodelNode)
 	  {
@@ -109,11 +138,37 @@ var expandNode = function(aNode)
   }
 };
 
-var clickNode = function(aNode)
+var treeClickNode = function(aNode)
 {
   if (aNode)
   {
-  	  SetSelectedModelNode(aNode.attributes.node.id);
+  	  modelSetSelectedNode(aNode.attributes.node.id);
   }
 };
 
+RegisterModelObserver("tree", function(aNotifyObj)
+{
+	if (aNotifyObj)
+	{
+		if (aNotifyObj.type === "treereplace")
+		{
+			_treeLoadTree("tvMain", aNotifyObj.tree);
+		}
+		else if (aNotifyObj.type === "nodeexpanded")
+		{
+			_treeNodeExpanded("tvMain", aNotifyObj.node);
+		}
+		else if (aNotifyObj.type === "nodeupdated")
+		{
+			_treeNodeUpdated("tvMain", aNotifyObj.node);
+		}
+		else if (aNotifyObj.type === "nodedeleted")
+		{
+			_treeNodeDeleted("tvMain", aNotifyObj.nodeid);
+		}
+		else if (aNotifyObj.type === "nodeadded")
+		{
+			_treeNodeAdded("tvMain", aNotifyObj.node);
+		}
+	}
+});
