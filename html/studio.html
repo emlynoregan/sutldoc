@@ -24,6 +24,7 @@
 		    <div id="mm1" style="width:150px;">
 		        <div id="menuRefresh">Refresh</div>
 		        <div id="menuAddDist">Add Distribution</div>
+		        <div id="menuAddDecl">Add Declaration</div>
 		        <div id="menuDelete" data-options="iconCls:'icon-del'">Delete</div>
 		    </div>
 		    <div id="mm2" style="width:100px;">
@@ -55,7 +56,16 @@
             </form>
           </div>
           <div id="decldetail" class="ss-detail">
-            decl
+            <form id="declForm" method="post">
+                <div class="ss-item">
+                    <label for="name">Name:</label>
+                    <input id="vbDeclName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname'" />
+                </div>
+                <div class="ss-item">
+                  <label for="published">Published:</label>
+					   <input id="sbDeclPublished" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">
+                </div>
+            </form>
           </div>
         </div>
 		<div id="windowAbout" class="easyui-window" title="About sUTL Studio" data-options="iconCls:'icon-save',closed:true" style="width:500px;height:200px;padding:10px;">
@@ -66,6 +76,7 @@
     <script type="text/javascript" src="js/model.js"></script>
     <script type="text/javascript" src="js/selectioncontroller.js"></script>
     <script type="text/javascript" src="js/distcontroller.js"></script>
+    <script type="text/javascript" src="js/declcontroller.js"></script>
     <script type="text/javascript" src="js/treecontroller.js"></script>
     <script type="text/javascript" src="js/menucontroller.js"></script>
     <script type="text/javascript" src="js/sUTL.js"></script>

@@ -1,18 +1,17 @@
 /*eslint-env jquery */
 
 /*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle*/
-var _lastSelectedNode = null;
 
-var distUpdateDistDetail = function(aNode)
+var declUpdateDeclDetail = function(aNode)
 {
   var SetTitle = function(aUpdated)
   {
-  	selSetCenterPanelTitle("Distribution", aUpdated);
+  	selSetCenterPanelTitle("Declaration", aUpdated);
   };
 
   SetTitle(aNode.state);
   
-  $('#sbDistPublished').switchbutton({
+  $('#sbDeclPublished').switchbutton({
       checked: aNode.published,
       onChange: function(checked){
         modelUpdateNode(aNode.id, {"published": checked, "state": "updated"});
@@ -21,8 +20,7 @@ var distUpdateDistDetail = function(aNode)
 
   var IsValid = function(value)
   {
-  	return true;
-//     return value === aNode.name || distNameIsAvailable(value, aNode.id);
+  	return value.length > 0;
   };
 
   $.extend(
@@ -31,17 +29,17 @@ var distUpdateDistDetail = function(aNode)
           validator: function(value, params){
           	return IsValid(value);
           },
-          message: 'This distribution name is already taken. Please try another.'
+          message: 'Please provide a declaration name.'
       }
   });
 
-  $('#vbDistName').textbox({
+  $('#vbDeclName').textbox({
       value: aNode.name,
   });
 
-  $('#vbDistName').textbox({
+  $('#vbDeclName').textbox({
       onChange: function(value, params){
-	    var lvalue = $('#vbDistName').textbox('getValue');
+	    var lvalue = $('#vbDeclName').textbox('getValue');
       	if (IsValid(lvalue))
       	{
 	        modelUpdateNode(aNode.id, {"name": lvalue, "state": "updated"});
@@ -50,15 +48,15 @@ var distUpdateDistDetail = function(aNode)
   });
 };
 
-RegisterModelObserver("distdetail", function(aNotifyObj)
+RegisterModelObserver("decldetail", function(aNotifyObj)
 {
 	if (aNotifyObj)
 	{
 		if (aNotifyObj.type === "nodeupdated")
 		{
-			if (aNotifyObj.node.type === "dist")
+			if (aNotifyObj.node.type === "decl")
 			{
-				distUpdateDistDetail(aNotifyObj.node);
+				declUpdateDeclDetail(aNotifyObj.node);
 			}
 		}
 	}

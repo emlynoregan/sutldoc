@@ -60,6 +60,28 @@ var gdataDist =
 	  },
 	  "requires": ["coalesce"]
 	},
+	{
+	  "name": "declmodeltodata_data_studio_emlynoregan_com",
+	  "transform-t": {
+	    "name": {
+	      "&": "coalesce",
+	      "list": ["^@.model.name", "^@.data.name"]
+	    },
+	    "published": {
+	      "&": "coalesce",
+	      "list": ["^@.model.published", "^@.data.published"]
+	    },
+	    "parent": {
+	      "&": "coalesce",
+	      "list": ["^@.model.parent", "^@.data.parent"]
+	    },
+	    "id": {
+	      "&": "coalesce",
+	      "list": ["^@.model.id", "^@.data.id"]
+	    }
+	  },
+	  "requires": ["coalesce"]
+	},
   {
     "name": "getalldatanodesforparent_data_studio_emlynoregan_com",
     "language": "sUTL0",

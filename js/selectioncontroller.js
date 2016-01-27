@@ -1,6 +1,6 @@
 /*eslint-env jquery */
 
-/*globals RegisterModelObserver distUpdateDistDetail*/
+/*globals RegisterModelObserver distUpdateDistDetail declUpdateDeclDetail*/
 
 var selGetCenterPanel = function()
 {
@@ -42,6 +42,8 @@ var selUpdateDeclDetail = function(aNode)
   $("#distdetail").hide();
   $("#decldetail").show();
   selSetCenterPanelTitle("Declaration");
+
+  declUpdateDeclDetail(aNode);
 };
 
 var selUpdateDetail = function(aNode)

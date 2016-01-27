@@ -1,21 +1,9 @@
 /*eslint-env jquery */
 
-/*globals RegisterModelObserver distUpdateDistDetail modelGetNodeById modelDeleteNode modelAddDistNode modelInitialiseTree*/
+/*globals RegisterModelObserver distUpdateDistDetail modelGetNodeById modelDeleteNode modelAddDistNode modelInitialiseTree modelAddDeclNode*/
 
 var menuUpdate = function(aSelectedNode)
 {
-	$('#menuRefresh').unbind();
-	$('#menuAddDist').unbind();
-	$('#menuDelete').unbind();
-
-	var menuRefreshEl = $('#menuRefresh')[0];
-	var menuAddDistEl = $('#menuAddDist')[0];
-	var menuDeleteEl = $('#menuDelete')[0];
-
-	var canRefresh = aSelectedNode && (aSelectedNode.type === "root" || aSelectedNode.type ===  "dist");
-	var canAddDist = aSelectedNode && (aSelectedNode.type === "root" || aSelectedNode.type ===  "dist");
-	var canDelete = aSelectedNode && (aSelectedNode.type === "dist" || aSelectedNode.type ===  "decl");
-
 	var UpdateMenuItem = function(aItemId, aMenuId, aEnabled, aOnClickF)
 	{
 		var litem = $('#' + aItemId);
@@ -28,13 +16,13 @@ var menuUpdate = function(aSelectedNode)
 		{
 		    litem.bind('click', aOnClickF);
 		    
-			lmenu.menu('enableItem', menuAddDistEl);
+			lmenu.menu('enableItem', itemEl);
 		}
 		else
 		{
-			lmenu.menu('disableItem', menuAddDistEl);
+			lmenu.menu('disableItem', itemEl);
 		}
-	}
+	};
 
 	UpdateMenuItem(
 		"menuRefresh", "mm1",
@@ -53,6 +41,19 @@ var menuUpdate = function(aSelectedNode)
 	    	if (lmodelNode)
 	    	{
 				modelAddDistNode(aSelectedNode.id);
+    		}	
+	    }		
+	);
+
+	UpdateMenuItem(
+		"menuAddDecl", "mm1",
+		aSelectedNode && (aSelectedNode.type ===  "dist"),
+		function() {
+	    	var lmodelNode = modelGetNodeById(aSelectedNode.id);
+	    	
+	    	if (lmodelNode)
+	    	{
+				modelAddDeclNode(aSelectedNode.id);
     		}	
 	    }		
 	);
@@ -77,7 +78,7 @@ var menuUpdate = function(aSelectedNode)
     		}	
 	    }		
 	);
-}
+};
 
 RegisterModelObserver("menu", function(aNotifyObj)
 {

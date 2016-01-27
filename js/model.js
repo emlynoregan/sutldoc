@@ -189,7 +189,7 @@ var modelDeleteNode = function(aNodeId)
 	}
 };
 
-var modelAddDistNode = function(aParentNodeId)
+var _modelAddNode = function(aParentNodeId, aType)
 {
 	var lparentNode = modelGetNodeById(aParentNodeId);
 	
@@ -197,11 +197,11 @@ var modelAddDistNode = function(aParentNodeId)
 	{
 		var lnewNode = sUTLevaluateDecl({
 			"item": {
-				"name": "newdist",
+				"name": "new" + aType,
 				"id": crapguid(),
 				"published": false
 			}
-		}, "constructdist");
+		}, "construct" + aType);
 		
 		lnewNode.state = "added";
 
@@ -218,3 +218,14 @@ var modelAddDistNode = function(aParentNodeId)
 		NotifyNodeAdded(lnewNode);
 	}
 };
+
+var modelAddDistNode = function(aParentNodeId)
+{
+	_modelAddNode(aParentNodeId, "dist");
+};
+
+var modelAddDeclNode = function(aParentNodeId)
+{
+	_modelAddNode(aParentNodeId, "decl");
+};
+

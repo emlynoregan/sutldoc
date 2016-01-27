@@ -169,21 +169,42 @@ var dataUpdateNode = function (aModelNode)
 {
 	if (aModelNode && aModelNode.state === "updated")
 	{
-		var ldistNode = GetDistById(aModelNode.id);
+		var lnewNode = null;
 		
+		var ldistNode = GetDistById(aModelNode.id);
+
 		if (ldistNode)
 		{
-			var lnewDistNode = sUTLevaluateDecl({
+			lnewNode = sUTLevaluateDecl({
 					"model": aModelNode,
 					"data": ldistNode
 				},
 				"distmodeltodata"
 			);
 
-			SetDistById(aModelNode.id, lnewDistNode);
-
-			delete aModelNode["state"];
+			SetDistById(aModelNode.id, lnewNode);
+		}
+		else
+		{
+			var ldeclNode = GetDeclById(aModelNode.id);
 			
+			if (ldeclNode)
+			{
+				lnewNode = sUTLevaluateDecl({
+						"model": aModelNode,
+						"data": ldistNode
+					},
+					"declmodeltodata"
+				);
+
+				SetDeclById(aModelNode.id, lnewNode);
+			}
+		}			
+		
+		if (lnewNode)
+		{
+			delete aModelNode["state"];
+
 			modelReplaceNode(aModelNode);
 		}
 	}
@@ -216,18 +237,46 @@ var dataAddNode = function (aModelNode)
 {
 	if (aModelNode && aModelNode.state === "added")
 	{
-		var ldistNode = GetDistById(aModelNode.id);
+		var lnewNode = null;
 		
-		if (!ldistNode)
+		if (aModelNode.type === "dist")
 		{
-			var lnewDistNode = sUTLevaluateDecl({
-					"model": aModelNode
-				},
-				"distmodeltodata"
-			);
-
-			SetDistById(aModelNode.id, lnewDistNode);
-
+			var ldistNode = GetDistById(aModelNode.id);
+			
+			if (!ldistNode)
+			{
+				lnewNode = sUTLevaluateDecl({
+						"model": aModelNode
+					},
+					"distmodeltodata"
+				);
+	
+				SetDistById(aModelNode.id, lnewNode);
+	
+				delete aModelNode["state"];
+				
+				modelReplaceNode(aModelNode);
+			}
+		}
+		else if (aModelNode.type === "decl")
+		{
+			var ldeclNode = GetDeclById(aModelNode.id);
+			
+			if (!ldeclNode)
+			{
+				lnewNode = sUTLevaluateDecl({
+						"model": aModelNode
+					},
+					"declmodeltodata"
+				);
+	
+				SetDeclById(aModelNode.id, lnewNode);
+	
+			}
+		}
+		
+		if (lnewNode)
+		{
 			delete aModelNode["state"];
 			
 			modelReplaceNode(aModelNode);
