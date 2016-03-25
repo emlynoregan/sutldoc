@@ -1,1 +1,1 @@
-{"builders":{"configs":{}},"mixinTypes":["contribution"],"runners":{"configs":{}},"type":"GAEPython","attributes":{"contribute_branch":["master"],"contribute_mode":["contribute"],"language":["python"]},"description":"Online authoring environment for sUTL"}
+{"runners":{"configs":{},"default":"system:/python/web/python27_gae"},"builders":{"configs":{}},"mixinTypes":["contribution"],"description":"Online authoring environment for sUTL","type":"GAEPython","attributes":{"language":["python"]}}

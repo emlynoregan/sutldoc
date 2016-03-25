@@ -127,7 +127,10 @@ var gmodelDist =
 	    "id": "^@.item.id",
 	    "type": "decl",
 	    "requiresdists": [],
-	    "published": "^@.item.published"
+	    "published": "^@.item.published",
+	    "source": "^@.item.source",
+	    "transform": "^@.item.transform",
+	    "result": "^@.item.result"
 	  }
 	}
 ];

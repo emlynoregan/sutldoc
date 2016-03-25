@@ -35,7 +35,10 @@ var _decls = sUTLevaluateDecl(
 		      "language": "sUTL0",
 		      "transform-t": "map code"
 		    },
-		    "parent": "cccccccccccccc"
+		    "parent": "cccccccccccccc",
+		    "source": "{\n" +
+		    "	\"xxx\": 4\n" +
+		    "}"
 		  },
 		  "ffffffffffff": {
 		    "name": "filter",

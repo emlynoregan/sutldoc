@@ -1,6 +1,6 @@
 /*eslint-env jquery */
 
-/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle*/
+/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace*/
 var _lastSelectedNode = null;
 
 var distUpdateDistDetail = function(aNode)
