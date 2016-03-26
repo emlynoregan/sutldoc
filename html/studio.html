@@ -17,9 +17,10 @@
     <div id="layoutMain" class="easyui-layout" style="width:100%;height:350px">
         <div data-options="region:'north'" style="height:30px;">
 		    <div class="easyui-panel" style="border:0;">
-		        <a href="#" class="easyui-linkbutton" data-options="plain:true">sUTL Studio</a>
+		        <a href="/" class="easyui-linkbutton" data-options="plain:true">sUTL Studio</a>
 		        <a href="#" class="easyui-menubutton" data-options="menu:'#mm1'">Tree</a>
 		        <a href="#" class="easyui-menubutton" data-options="menu:'#mm2'">Help</a>
+		        <a href="#" class="easyui-menubutton" data-options="menu:'#mm3'"><span id="menuLoginname">Loginname</span></a>
 		    </div>
 		    <div id="mm1" style="width:150px;">
 		        <div id="menuRefresh">Refresh</div>
@@ -29,6 +30,9 @@
 		    </div>
 		    <div id="mm2" style="width:100px;">
 		        <div id="menuAbout">About</div>
+		    </div>
+		    <div id="mm3" style="width:100px;">
+		        <div id="menuLogout">Logout</div>
 		    </div>
 		</div>
         <div data-options="region:'south',split:true" style="height:50px;"></div>

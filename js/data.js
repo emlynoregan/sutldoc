@@ -287,6 +287,17 @@ var dataAddNode = function (aModelNode)
 	}
 };
 
+var dataGetUser = function(aHandler)
+{
+	$.ajax({
+	  url: "/api/self",
+	  type: "post",
+	  dataType: 'json',
+	  success: function(data){
+		aHandler(data);
+  	  }
+	});
+};
 
 RegisterModelObserver("data", function(aNotifyObj)
 {

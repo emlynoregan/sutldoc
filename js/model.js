@@ -1,6 +1,6 @@
-/*globals sUTLevaluateDecl crapguid*/
+/*globals sUTLevaluateDecl crapguid dataGetUser*/
 
-/*eslint-env meteor */
+/*eslint-env meteor, node*/
 
 var gmodelTree = null;
 var gselectedNode = null;
@@ -23,6 +23,7 @@ var UnregisterModelObserver = function(aId)
 ////////////// Notify
 var _doNotify = function (aNotifyObj)
 {
+	console.log("notify: " + JSON.stringify(aNotifyObj))
 	_.map(_modelObservers, function(aObserverF){
 		aObserverF(aNotifyObj);
 	});
@@ -229,3 +230,7 @@ var modelAddDeclNode = function(aParentNodeId)
 	_modelAddNode(aParentNodeId, "decl");
 };
 
+var modelGetUser = function(aHandler)
+{
+    dataGetUser(aHandler);	
+}

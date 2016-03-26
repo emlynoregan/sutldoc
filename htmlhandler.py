@@ -10,7 +10,7 @@ jinja_environment = jinja2.Environment(
 
 class HtmlHandler(webapp2.RequestHandler):
   def get(self, aName=None):
-    ltemplate = self.getTemplate(aName if aName else "studio")
+    ltemplate = self.getTemplate(aName if aName else "index")
     self.response.out.write(ltemplate.render({}))
 
   def getTemplate(self, aName):

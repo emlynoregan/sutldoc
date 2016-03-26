@@ -1,6 +1,8 @@
-/*eslint-env jquery */
+/*eslint-env jquery, browser*/
 
-/*globals RegisterModelObserver distUpdateDistDetail modelGetNodeById modelDeleteNode modelAddDistNode modelInitialiseTree modelAddDeclNode*/
+/*globals RegisterModelObserver distUpdateDistDetail modelGetNodeById modelDeleteNode modelAddDistNode modelInitialiseTree modelAddDeclNode modelGetUser*/
+
+var _user = null;
 
 var menuUpdate = function(aSelectedNode)
 {
@@ -78,6 +80,33 @@ var menuUpdate = function(aSelectedNode)
     		}	
 	    }		
 	);
+
+	UpdateMenuItem(
+		"menuLogout", "mm3",
+		true,
+		function() {
+			$.messager.confirm(
+				'Confirm Logout',
+				'Are you sure you wish to logout?',
+				function(r){
+				    if (r){
+				        window.location.replace("/logout");
+				    }
+			    }
+			);
+	    }		
+	);
+	
+	if (!_user)
+	{
+		modelGetUser(function(aUser){
+			_user = aUser;
+			
+			var lmbLogin = $('#menuLoginname');
+			
+			lmbLogin.text(aUser.name);
+		});
+	}
 };
 
 RegisterModelObserver("menu", function(aNotifyObj)

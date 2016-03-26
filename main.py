@@ -1,22 +1,27 @@
 import webapp2
 from htmlhandler import HtmlHandler
+from selfapi import SelfApiHandler
+from logoutapi import LogoutApiHandler
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.response.write('''
         <html>
-        <head>
-			<meta name="google-site-verification" content="DhdoNAtPo7oPymcpVrrMTHlYrvvtYgvmjw1cnR3cJ3U" />
-		</head>
 		<body>
 	        <a href="/doc/sutldoc">sUTL doc</a>
 	    </body>
 	    </html>
         ''')
 
-app = webapp2.WSGIApplication([
-#     ('/doc/(.*)/', RedirectHandler),
-    ('/doc/(.*)', HtmlHandler),
+_routes = [
     ('/(studio)', HtmlHandler),
     ('/', HtmlHandler)
-], debug=True)
+]
+
+def AddRoute(aApiHandler):
+	_routes.append((aApiHandler.GetAPIPath(), aApiHandler))
+	
+AddRoute(SelfApiHandler)
+AddRoute(LogoutApiHandler)	
+
+app = webapp2.WSGIApplication(_routes, debug=True)
