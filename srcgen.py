@@ -28,9 +28,9 @@ class SrcGenBase(webapp2.RequestHandler):
 			if not lgoogleUser and lrequiredUserId:
 				self.response.status = 401
 				lresponseMessage = "User required"
-			elif lgoogleUser.user_id() != lrequiredUserId:
+			elif lrequiredUserId and (lgoogleUser.user_id() != lrequiredUserId):
 				self.response.status = 304
-				lresponseMessage = "User not authorised (%s,%s)" % ()
+				lresponseMessage = "User not authorised (%s,%s)" % (lgoogleUser.user_id(), lrequiredUserId)
 			else:
 				logging.debug("User: %s" % lgoogleUser)
 				lresponseMessage = self.ProcessSrcGen(lgoogleUser)
