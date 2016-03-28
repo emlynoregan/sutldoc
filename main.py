@@ -7,6 +7,7 @@ from htmlhandler import HtmlHandler
 from selfapi import SelfApiHandler
 from logoutapi import LogoutApiHandler
 from declapi import GetDeclById, SetDeclById, GetDistById, SetDistById, GetAllDeclsForParent, GetAllDistsForParent, DelDeclById, DelDistById
+from srcgen import SrcGenDecl
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -36,6 +37,7 @@ AddRoute(SetDistById)
 AddRoute(DelDistById) 
 AddRoute(GetAllDeclsForParent) 
 AddRoute(GetAllDistsForParent)
+AddRoute(SrcGenDecl)
 
 app = webapp2.WSGIApplication(_routes, debug=True)
 

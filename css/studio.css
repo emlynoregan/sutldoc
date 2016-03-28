@@ -22,3 +22,20 @@
     font-size: 150%;
 }
 
+.properties{
+	float: left;
+	width: 600px;
+}
+.linkbox{
+	width: 300px;
+	float: right;
+}
+
+.linkboxitem{
+	float: right;
+	margin: 10px;
+}
+
+.fullwidth{
+	clear:both;
+}

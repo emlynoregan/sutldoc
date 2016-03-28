@@ -53,7 +53,7 @@
             <form id="distForm" method="post">
                 <div class="ss-item">
                     <label for="name">Name:</label>
-                    <input id="vbDistName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname'" />
+                    <input id="vbDistName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname', width:500" />
                 </div>
                 <div class="ss-item">
                   <label for="published">Published:</label>
@@ -63,32 +63,41 @@
           </div>
           <div id="decldetail" class="ss-detail">
             <form id="declForm" method="post">
-                <div class="ss-item">
-                    <label for="name">Name:</label>
-                    <input id="vbDeclName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname'" />
-                </div>
-                <div class="ss-item">
-                  <label for="published">Published:</label>
-					   <input id="sbDeclPublished" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">
-                </div>
-                <div class="ss-item">
-                    <label for="requires">Requires:</label>
-                    <input id="vbDeclRequires" class="easyui-textbox" type="text" name="requires" />
-                </div>
-                <div class="ss-item">
-                    <label id="lblTransform" for="transform">Transform:</label>
-					<div id="edTransform" class="editor" name="transform" style="min-width: 500px; width:100%; height:400px;"></div>
-	                <div id="transformmsg" class="message"></div>
-                </div>
-                <div class="ss-item">
-                    <label id="lblTransform" for="source">Source:</label>
-					<div id="edSource" class="editor" name="source" style="min-width: 500px; width:100%; height:400px;"></div>
-	                <div id="sourcemsg" class="message"></div>
-                </div>
-                <div class="ss-item">
-                    <label for="result">Result:</label>
-					<div id="edResult" class="editor" name="result" style="min-width: 500px; width:100%; height:400px;"></div>
-                </div>
+            	<div class="properties">
+	                <div class="ss-item">
+	                    <label for="name">Name:</label>
+	                    <input id="vbDeclName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname', width:500" />
+	                </div>
+	                <div class="ss-item">
+	                  <label for="published">Published:</label>
+						   <input id="sbDeclPublished" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">
+	                </div>
+	                <div class="ss-item">
+	                    <label for="requires">Requires:</label>
+	                    <input id="vbDeclRequires" class="easyui-textbox" type="text" name="requires" data-options="width:500"/>
+	                </div>
+	            </div>
+	            <div class="linkbox">
+					<div>
+						<a href="#" id="lbsrcgen" class="linkboxitem easyui-linkbutton" target="_blank">Get Declaration JSON</a>
+					</div>
+	            </div>
+	            <div class="fullwidth">
+	                <div class="ss-item">
+	                    <label id="lblTransform" for="transform">Transform:</label>
+						<div id="edTransform" class="editor" name="transform" style="min-width: 500px; width:100%; height:400px;"></div>
+		                <div id="transformmsg" class="message"></div>
+	                </div>
+	                <div class="ss-item">
+	                    <label id="lblTransform" for="source">Source:</label>
+						<div id="edSource" class="editor" name="source" style="min-width: 500px; width:100%; height:400px;"></div>
+		                <div id="sourcemsg" class="message"></div>
+	                </div>
+	                <div class="ss-item">
+	                    <label for="result">Result:</label>
+						<div id="edResult" class="editor" name="result" style="min-width: 500px; width:100%; height:400px;"></div>
+	                </div>
+	            </div>
             </form>
           </div>
         </div>

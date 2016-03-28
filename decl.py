@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 import logging
+import json
 
 class Decl(ndb.Model):
 	user_id = ndb.StringProperty()
@@ -12,10 +13,12 @@ class Decl(ndb.Model):
 	
 	@classmethod
 	def GetById(cls, aId, aUser):
+		luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
+		
 		logging.debug("GetById: %s, %s" % (aId, aUser))
 		retval = Decl.get_by_id(aId)
 		logging.debug("retval: %s" % retval)
-		retval = retval if retval and retval.user_id == aUser.user_id() else None
+		retval = retval if retval and retval.user_id == luserId else None
 		logging.debug("retval: %s" % retval)
 		return retval
 
@@ -28,9 +31,35 @@ class Decl(ndb.Model):
 			"published": self.published,
 			"parent": self.parent.id() if self.parent and self.parent.id() != "__root__" else None,
 			"source": self.source,
-			"transform": self.transform
+			"transform": self.transform,
+			"srcgen": "/srcgen/decl?id=%s&userid=%s" % (self.key.id(), self.user_id)
 		}		
 		
+	def to_decljson(self):
+		try:
+			lrequires = self.requires.split(" ")
+		except Exception, ex:
+			logging.exception("fail")
+			lrequires = None
+
+		try:
+			ltransform = json.loads(unicode(self.transform))
+		except Exception, ex:
+			logging.exception("fail")
+			ltransform = None
+
+		ldeclJson = {
+			"name": self.name,
+			"language": "sUTL0"
+		}
+
+		if ltransform:
+			ldeclJson["transform"] = ltransform
+		if lrequires:
+			ldeclJson["requires"] = lrequires
+			
+		return ldeclJson
+
 	@classmethod
 	def from_json(self, aJson, aUser):
 		ldecl = Decl.get_or_insert(aJson.get("id"))
@@ -57,8 +86,10 @@ class Dist(ndb.Model):
 
 	@classmethod
 	def GetById(cls, aId, aUser):
+		luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
+
 		retval = Dist.get_by_id(aId)
-		retval = retval if retval and retval.user_id == aUser.user_id() else None
+		retval = retval if retval and retval.user_id == luserId else None
 		return retval
 
 	def to_json(self):

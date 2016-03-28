@@ -101,50 +101,52 @@ var declUpdateDeclDetail = function(aNode)
 	
 	  var UpdateResult = function()
 	  {
-	  	
-	    if (!(EditorIsInvalid(_edTransform, "Transform") || EditorIsInvalid(_edSource, "Source")))
-	    {
-	        var lsourceJson = JSON.parse(_edSource.getValue());
-	        var ltransform = JSON.parse(_edTransform.getValue());
-	        var lrequires = GetRequires($('#vbDeclRequires').textbox('getValue'));
+	  	if (aNode.id === _selectedNode.id)
+	  	{
+		    if (!(EditorIsInvalid(_edTransform, "Transform") || EditorIsInvalid(_edSource, "Source")))
+		    {
+		        var lsourceJson = JSON.parse(_edSource.getValue());
+		        var ltransform = JSON.parse(_edTransform.getValue());
+		        var lrequires = GetRequires($('#vbDeclRequires').textbox('getValue'));
+		
+		        try
+		        {
+		            var lresult = null;
 	
-	        try
-	        {
-	            var lresult = null;
-
-	            var ldecl = {
-	            	"transform-t": ltransform
-	            };
-	            
-	            if (lrequires)
-	            {
-	            	ldecl["requires"] = lrequires;
-	            }
-	
-	            var clresult = sUTL.compilelib([ldecl], [], true);
-	
-	            if (!clresult)
-	            {
-	              lresult = "** Can't load libs **";
-	            }
-	            else if ("fail" in clresult)
-	            {
-	              lresult = clresult["fail"];
-	            }
-	            else
-	            {
-	              lresult = sUTL.evaluate(lsourceJson, ltransform, clresult["lib"] || {}, 0);
-	            }
-	
-	            _edResult.setValue(JSON.stringify(lresult, null, 2));
-	            _edResult.gotoLine(0);
-	        }
-	        catch (e)
-	        {
-	            console.log(e);
-	            _edResult.setValue("Exception: " + e.message);
-	            _edResult.gotoLine(0);
-	        }
+		            var ldecl = {
+		            	"transform-t": ltransform
+		            };
+		            
+		            if (lrequires)
+		            {
+		            	ldecl["requires"] = lrequires;
+		            }
+		
+		            var clresult = sUTL.compilelib([ldecl], [], true);
+		
+		            if (!clresult)
+		            {
+		              lresult = "** Can't load libs **";
+		            }
+		            else if ("fail" in clresult)
+		            {
+		              lresult = clresult["fail"];
+		            }
+		            else
+		            {
+		              lresult = sUTL.evaluate(lsourceJson, ltransform, clresult["lib"] || {}, 0);
+		            }
+		
+		            _edResult.setValue(JSON.stringify(lresult, null, 2));
+		            _edResult.gotoLine(0);
+		        }
+		        catch (e)
+		        {
+		            console.log(e);
+		            _edResult.setValue("Exception: " + e.message);
+		            _edResult.gotoLine(0);
+		        }
+		    }
 	    }
 	  };
 
@@ -153,13 +155,13 @@ var declUpdateDeclDetail = function(aNode)
 	  _dontUpdate = false;
 
 	  var lsourceTimeout = null;
-	  _edSource.getSession().on('change', function() {
+	  _edSource.getSession().on('change', function() 
+	  {
 	  	if (!_dontUpdate)
 	  	{
-		    //ValidateJson(_edSource, "#sourcemsg");
-
 			if (lsourceTimeout)
 				clearTimeout(lsourceTimeout);
+
 		    lsourceTimeout = setTimeout(
 		    	function() {
 		    		modelUpdateNode(_selectedNode.id, {"source": _edSource.getValue(), "state": "updated"});
@@ -236,6 +238,9 @@ var declUpdateDeclDetail = function(aNode)
 	      }
 	  });
   }
+
+  $('#lbsrcgen').attr('href', aNode.srcgen);
+	  
   var SetTitle = function(aNode)
   {
   	selSetCenterPanelTitle(aNode.name, aNode.state);
@@ -256,12 +261,12 @@ RegisterModelObserver("decldetail", function(aNotifyObj)
 			_edResult = null;
 			_dontUpdate = false;
 		}
-		else if (aNotifyObj.type === "nodeupdated")
-		{
-			if (aNotifyObj.node.type === "decl")
-			{
-				declUpdateDeclDetail(aNotifyObj.node);
-			}
-		}
+//		else if (aNotifyObj.type === "nodeupdated")
+//		{
+//			if (aNotifyObj.node.type === "decl")
+//			{
+//				declUpdateDeclDetail(aNotifyObj.node);
+//			}
+//		}
 	}
 });
