@@ -261,12 +261,12 @@ RegisterModelObserver("decldetail", function(aNotifyObj)
 			_edResult = null;
 			_dontUpdate = false;
 		}
-//		else if (aNotifyObj.type === "nodeupdated")
-//		{
-//			if (aNotifyObj.node.type === "decl")
-//			{
-//				declUpdateDeclDetail(aNotifyObj.node);
-//			}
-//		}
+		else if (aNotifyObj.type === "nodeupdated")
+		{
+			if (aNotifyObj.node.type === "decl")
+			{
+				declUpdateDeclDetail(aNotifyObj.node);
+			}
+		}
 	}
 });

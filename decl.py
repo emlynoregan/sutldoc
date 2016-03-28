@@ -37,7 +37,7 @@ class Decl(ndb.Model):
 		
 	def to_decljson(self):
 		try:
-			lrequires = self.requires.split(" ")
+			lrequires = [lrequire for lrequire in self.requires.split(" ") if lrequire]
 		except Exception, ex:
 			logging.exception("fail")
 			lrequires = None
