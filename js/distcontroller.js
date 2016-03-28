@@ -1,10 +1,12 @@
 /*eslint-env jquery */
 
-/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace*/
+/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace NotifyErrorMessage*/
 var _lastSelectedNode = null;
 
 var distUpdateDistDetail = function(aNode)
 {
+  NotifyErrorMessage("");
+  
   var SetTitle = function(aUpdated)
   {
   	selSetCenterPanelTitle("Distribution", aUpdated);

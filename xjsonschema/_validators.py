@@ -1,8 +1,8 @@
 import re
 
-from jsonschema import _utils
-from jsonschema.exceptions import FormatError, ValidationError
-from jsonschema.compat import iteritems
+from xjsonschema import _utils
+from xjsonschema.exceptions import FormatError, ValidationError
+from xjsonschema.compat import iteritems
 
 
 FLOAT_TOLERANCE = 10 ** -15

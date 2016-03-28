@@ -3,7 +3,7 @@ var gmodelDist =
 	{
 	  "name": "constructroot_model_studio_emlynoregan_com",
 	  "transform-t": {
-	    "name": "Root",
+	    "name": "/",
 	    "id": "root",
 	    "type": "root"
 	  }
@@ -126,7 +126,6 @@ var gmodelDist =
 	    "name": "^@.item.name",
 	    "id": "^@.item.id",
 	    "type": "decl",
-	    "requiresdists": [],
 	    "published": "^@.item.published",
 	    "source": "^@.item.source",
 	    "transform": "^@.item.transform",

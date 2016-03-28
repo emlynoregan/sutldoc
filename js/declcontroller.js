@@ -1,6 +1,6 @@
 /*eslint-env jquery, node*/
 
-/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace sUTL lsUTLLibDists*/
+/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace sUTL lsUTLLibDists NotifyErrorMessage*/
 
 var setupEditor = function(aId)
 {
@@ -9,11 +9,11 @@ var setupEditor = function(aId)
     editor.getSession().setMode("ace/mode/json");
     editor.getSession().setTabSize(2);
     editor.getSession().setUseSoftTabs(true);
-    editor.setFontSize(20);
+    editor.setFontSize(14);
     return editor;
 };
 
-var EditorIsInvalid = function(aEditor)
+var EditorIsInvalid = function(aEditor, aPrefix)
 {
     var retval = null;
 
@@ -27,7 +27,29 @@ var EditorIsInvalid = function(aEditor)
         retval = err.message;
     }
 
+	if (retval)
+		NotifyErrorMessage(aPrefix + ": " + retval);
+		
     return retval;
+};
+
+var GetRequires = function(aStrRequires)
+{
+	var retval = null;
+	
+	if (aStrRequires)
+	{
+	    try
+	    {
+	    	retval = aStrRequires.split(" ");
+	    }
+	    catch (err)
+	    {
+	    	console.log(err);
+	    }
+	}
+	
+	return retval;
 };
 
 var ValidateJson = function(aEditor, aMessageSelector)
@@ -45,6 +67,8 @@ var declUpdateDeclDetail = function(aNode)
 {
   if (!(_selectedNode && (aNode.id === _selectedNode.id)))
   {
+  	  NotifyErrorMessage("");
+  	  
 	  _selectedNode = aNode;
   	
   	  if (!_edSource )
@@ -77,18 +101,27 @@ var declUpdateDeclDetail = function(aNode)
 	
 	  var UpdateResult = function()
 	  {
-	    if (!(EditorIsInvalid(_edSource) || EditorIsInvalid(_edTransform)))
+	  	
+	    if (!(EditorIsInvalid(_edTransform, "Transform") || EditorIsInvalid(_edSource, "Source")))
 	    {
 	        var lsourceJson = JSON.parse(_edSource.getValue());
-	        var ltransformJson = JSON.parse(_edTransform.getValue());
+	        var ltransform = JSON.parse(_edTransform.getValue());
+	        var lrequires = GetRequires($('#vbDeclRequires').textbox('getValue'));
 	
 	        try
 	        {
 	            var lresult = null;
+
+	            var ldecl = {
+	            	"transform-t": ltransform
+	            };
+	            
+	            if (lrequires)
+	            {
+	            	ldecl["requires"] = lrequires;
+	            }
 	
-	            var ltransform = "transform-t" in ltransformJson ? ltransformJson["transform-t"] : null;
-	
-	            var clresult = sUTL.compilelib([ltransformJson], lsUTLLibDists, true);
+	            var clresult = sUTL.compilelib([ldecl], [], true);
 	
 	            if (!clresult)
 	            {
@@ -156,9 +189,9 @@ var declUpdateDeclDetail = function(aNode)
 	  });
 	  
 	  $('#sbDeclPublished').switchbutton({
-	      checked: aNode.published,
+	      checked: _selectedNode.published,
 	      onChange: function(checked){
-	        modelUpdateNode(aNode.id, {"published": checked, "state": "updated"});
+	        modelUpdateNode(_selectedNode.id, {"published": checked, "state": "updated"});
 	      }
 	  });
 
@@ -178,7 +211,7 @@ var declUpdateDeclDetail = function(aNode)
 	  });
 	
 	  $('#vbDeclName').textbox({
-	      value: aNode.name,
+	      value: _selectedNode.name,
 	  });
 	
 	  $('#vbDeclName').textbox({
@@ -186,24 +219,44 @@ var declUpdateDeclDetail = function(aNode)
 		    var lvalue = $('#vbDeclName').textbox('getValue');
 	      	if (IsValid(lvalue))
 	      	{
-		        modelUpdateNode(aNode.id, {"name": lvalue, "state": "updated"});
+		        modelUpdateNode(_selectedNode.id, {"name": lvalue, "state": "updated"});
 	        }
 	      }
 	  });
+
+	  $('#vbDeclRequires').textbox({
+	      value: _selectedNode.requires,
+	  });
+	
+	  $('#vbDeclRequires').textbox({
+	      onChange: function(value, params){
+		    var lvalue = $('#vbDeclRequires').textbox('getValue');
+		    modelUpdateNode(_selectedNode.id, {"requires": lvalue, "state": "updated"});
+		    UpdateResult();
+	      }
+	  });
   }
-  var SetTitle = function(aUpdated)
+  var SetTitle = function(aNode)
   {
-  	selSetCenterPanelTitle("Declaration", aUpdated);
+  	selSetCenterPanelTitle(aNode.name, aNode.state);
   };
 
-  SetTitle(aNode.state);
+  SetTitle(aNode);
 };
 
 RegisterModelObserver("decldetail", function(aNotifyObj)
 {
 	if (aNotifyObj)
 	{
-		if (aNotifyObj.type === "nodeupdated")
+		if (aNotifyObj.type === "treereplace")
+		{
+			_selectedNode = null;
+			_edSource = null;
+			_edTransform = null;
+			_edResult = null;
+			_dontUpdate = false;
+		}
+		else if (aNotifyObj.type === "nodeupdated")
 		{
 			if (aNotifyObj.node.type === "decl")
 			{

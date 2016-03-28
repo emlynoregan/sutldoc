@@ -24,10 +24,10 @@
 
     function get(obj, key, def)
     {
-        if (key in obj && obj[key] != null)
-            return obj[key]
+        if (isObject(obj) && key in obj && obj[key] != null)
+            return obj[key];
         else
-            return def
+            return def;
     }
 
     function gettype(item)

@@ -93,6 +93,14 @@ var NotifyNodeAdded = function(aNode)
 	});
 };
 
+var NotifyErrorMessage = function(aErrorMessage)
+{
+	_doNotify({
+		type: "errormessage",
+		errormessage: aErrorMessage
+	});
+};
+
 ////////////// Model manipulation
 var _modelSetNode = function(aNode)
 {

@@ -35,7 +35,9 @@
 		        <div id="menuLogout">Logout</div>
 		    </div>
 		</div>
-        <div data-options="region:'south',split:true" style="height:50px;"></div>
+        <div data-options="region:'south',split:true" style="height:50px;">
+        	<span id="errormessage" class="errormessage"></span>
+        </div>
         <div data-options="region:'west',split:true,collapsible:false" title="Main" style="width:200px">
           <ul id="tvMain" class="easyui-tree">
             <li id="tvMainRoot">
@@ -70,14 +72,18 @@
 					   <input id="sbDeclPublished" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">
                 </div>
                 <div class="ss-item">
-                    <label for="source">Source:</label>
-					<div id="edSource" class="editor" name="source" style="min-width: 500px; width:100%; height:400px;"></div>
-	                <div id="sourcemsg" class="message"></div>
+                    <label for="requires">Requires:</label>
+                    <input id="vbDeclRequires" class="easyui-textbox" type="text" name="requires" />
                 </div>
                 <div class="ss-item">
-                    <label for="transform">Transform:</label>
+                    <label id="lblTransform" for="transform">Transform:</label>
 					<div id="edTransform" class="editor" name="transform" style="min-width: 500px; width:100%; height:400px;"></div>
 	                <div id="transformmsg" class="message"></div>
+                </div>
+                <div class="ss-item">
+                    <label id="lblTransform" for="source">Source:</label>
+					<div id="edSource" class="editor" name="source" style="min-width: 500px; width:100%; height:400px;"></div>
+	                <div id="sourcemsg" class="message"></div>
                 </div>
                 <div class="ss-item">
                     <label for="result">Result:</label>
@@ -98,6 +104,7 @@
     <script type="text/javascript" src="js/declcontroller.js"></script>
     <script type="text/javascript" src="js/treecontroller.js"></script>
     <script type="text/javascript" src="js/menucontroller.js"></script>
+    <script type="text/javascript" src="js/bottomcontroller.js"></script>
     <script type="text/javascript" src="js/sUTL.js"></script>
     <script type="text/javascript" src="js/model.sUTL.js"></script>
     <script type="text/javascript" src="js/tree.sUTL.js"></script>

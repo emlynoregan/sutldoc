@@ -2,7 +2,7 @@ import os
 import json
 # import urllib2
 import logging
-import jsonschema
+import xjsonschema
 
 _loadedfiles = {}
 def loadFile(aFolderName, aFileName):

@@ -6,7 +6,7 @@ import logging
 from loader import loadJsonSchema
 
 import json
-import jsonschema
+import xjsonschema
     
 class APIBase(webapp2.RequestHandler):
     @classmethod
@@ -74,7 +74,7 @@ class APIBase(webapp2.RequestHandler):
 
             ljsonSchema = self.GetJsonSchema()
             if ljsonSchema:
-                jsonschema.validate(lquery, ljsonSchema)
+                xjsonschema.validate(lquery, ljsonSchema)
 
             lgoogleUser = users.get_current_user()
             
@@ -90,7 +90,7 @@ class APIBase(webapp2.RequestHandler):
                 else:
                     return # everything already done in self.ProcessAPICall
                 
-        except jsonschema.ValidationError, vex:
+        except xjsonschema.ValidationError, vex:
             logging.exception("validation error")
             self.response.status = 400
             lresponseMessage = str(vex)

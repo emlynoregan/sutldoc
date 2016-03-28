@@ -50,8 +50,16 @@ var gdataDist =
 	      "list": ["^@.model.published", "^@.data.published"]
 	    },
 	    "parent": {
-	      "&": "coalesce",
-	      "list": ["^@.model.parent", "^@.data.parent"]
+	    	"!": {":": {
+		    	"&": "if",
+		    	"cond": {":": ["&=", "^@.pval", "root"]},
+		    	"true": null,
+		    	"false": "^@.pval"
+	    	}},
+		    "pval": {
+		      "&": "coalesce",
+		      "list": ["^@.model.parent", "^@.data.parent"]
+		    }
 	    },
 	    "id": {
 	      "&": "coalesce",
@@ -67,6 +75,10 @@ var gdataDist =
 	      "&": "coalesce",
 	      "list": ["^@.model.name", "^@.data.name"]
 	    },
+	    "requires": {
+	      "&": "coalesce",
+	      "list": ["^@.model.requires", "^@.data.requires"]
+	    },
 	    "published": {
 	      "&": "coalesce",
 	      "list": ["^@.model.published", "^@.data.published"]
@@ -74,6 +86,14 @@ var gdataDist =
 	    "parent": {
 	      "&": "coalesce",
 	      "list": ["^@.model.parent", "^@.data.parent"]
+	    },
+	    "source": {
+	      "&": "coalesce",
+	      "list": ["^@.model.source", "^@.data.source"]
+	    },
+	    "transform": {
+	      "&": "coalesce",
+	      "list": ["^@.model.transform", "^@.data.transform"]
 	    },
 	    "id": {
 	      "&": "coalesce",

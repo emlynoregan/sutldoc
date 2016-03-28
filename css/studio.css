@@ -16,7 +16,9 @@
 	height:400px;
 }
 
-.message{
-    color: red;
+.errormessage{
+    color: #ffddee;
+    padding: 5px;
+    font-size: 150%;
 }
 

@@ -9,13 +9,13 @@ instance under a schema, and will create a validator for you.
 
 """
 
-from jsonschema.exceptions import (
+from xjsonschema.exceptions import (
     ErrorTree, FormatError, RefResolutionError, SchemaError, ValidationError
 )
-from jsonschema._format import (
+from xjsonschema._format import (
     FormatChecker, draft3_format_checker, draft4_format_checker,
 )
-from jsonschema.validators import (
+from xjsonschema.validators import (
     Draft3Validator, Draft4Validator, RefResolver, validate
 )
 
