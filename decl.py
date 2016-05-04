@@ -54,7 +54,7 @@ class Decl(ndb.Model):
 		}
 
 		if ltransform:
-			ldeclJson["transform"] = ltransform
+			ldeclJson["transform-t"] = ltransform
 		if lrequires:
 			ldeclJson["requires"] = lrequires
 			

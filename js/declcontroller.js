@@ -29,6 +29,7 @@ var EditorIsInvalid = function(aEditor, aPrefix)
 
 	if (retval)
 		NotifyErrorMessage(aPrefix + ": " + retval);
+
 		
     return retval;
 };
@@ -105,6 +106,8 @@ var declUpdateDeclDetail = function(aNode)
 	  	{
 		    if (!(EditorIsInvalid(_edTransform, "Transform") || EditorIsInvalid(_edSource, "Source")))
 		    {
+				NotifyErrorMessage("");
+
 		        var lsourceJson = JSON.parse(_edSource.getValue());
 		        var ltransform = JSON.parse(_edTransform.getValue());
 		        var lrequires = GetRequires($('#vbDeclRequires').textbox('getValue'));
@@ -139,11 +142,15 @@ var declUpdateDeclDetail = function(aNode)
 		
 		            _edResult.setValue(JSON.stringify(lresult, null, 2));
 		            _edResult.gotoLine(0);
+
+					NotifyErrorMessage("");
 		        }
 		        catch (e)
 		        {
 		            console.log(e);
-		            _edResult.setValue("Exception: " + e.message);
+		            var lerrorMessage = "Result Exception: " + e.message;
+					NotifyErrorMessage(lerrorMessage);
+		            _edResult.setValue(lerrorMessage);
 		            _edResult.gotoLine(0);
 		        }
 		    }
