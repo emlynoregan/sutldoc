@@ -61,6 +61,14 @@ var NotifyNodeSelected = function(aNode)
 	});
 };
 
+var NotifyNodeUnselected = function(aNode)
+{
+	_doNotify({
+		type: "nodeunselected",
+		node: aNode
+	});
+};
+
 var NotifyNodeExpanded = function(aNode)
 {
 	_doNotify({
@@ -156,6 +164,15 @@ var modelSetSelectedNode = function(aNodeId)
 	gselectedNode = lnode;
 	
 	NotifyNodeSelected(lnode);
+};
+
+var modelUnselectNode = function(aNodeId)
+{
+	var lnode = modelGetNodeById(aNodeId);
+	
+	gselectedNode = lnode;
+	
+	NotifyNodeUnselected(lnode);
 };
 
 var modelInitialiseTree = function()

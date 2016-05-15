@@ -90,6 +90,10 @@ $(
         onBeforeExpand: function(node)
 		{
 		  treeExpandNode(node);
+		},
+        onBeforeSelect: function(node)
+		{
+		  return treeBeforeSelectNode(node);
 		}
       }
     );    

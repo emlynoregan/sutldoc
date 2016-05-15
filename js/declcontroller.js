@@ -53,24 +53,45 @@ var GetRequires = function(aStrRequires)
 	return retval;
 };
 
-var ValidateJson = function(aEditor, aMessageSelector)
-{
-    $(aMessageSelector).text(EditorIsInvalid(aEditor));
-};
-
+//var ValidateJson = function(aEditor, aMessageSelector)
+//{
+//    $(aMessageSelector).text(EditorIsInvalid(aEditor));
+//};
+//
 var _selectedNode = null;
 var _edSource = null;
 var _edTransform = null;
 var _edResult = null;
 var _dontUpdate = false;
 
+var _sourceTimeout = null;
+var _transformTimeout = null;
+
 var declUpdateDeclDetail = function(aNode)
 {
-  if (!(_selectedNode && (aNode.id === _selectedNode.id)))
+  var lsrcgen = null;
+  if (aNode.srcgen)
+  	lsrcgen = aNode.srcgen;
+  $('#lbsrcgen').attr('href', lsrcgen);
+	  
+  var SetTitle = function(aNode)
   {
+  	selSetCenterPanelTitle(aNode.name, aNode.state);
+  };
+
+  SetTitle(aNode);
+};
+
+
+var declSetSelected = function(aNode)
+{
+  if (aNode && !(_selectedNode && (aNode.id === _selectedNode.id)))
+  {
+	  _selectedNode = aNode;
+
   	  NotifyErrorMessage("");
   	  
-	  _selectedNode = aNode;
+//	  _selectedNode = aNode;
   	
   	  if (!_edSource )
   	  {
@@ -79,9 +100,6 @@ var declUpdateDeclDetail = function(aNode)
 		  _edResult = setupEditor("edResult");
 	  }
 	  
-	  //_edSource.getSession().removeAllListeners('change');
-	  //_edTransform.getSession().removeAllListeners('change');
-
 	  _dontUpdate = true;
 	  if (_edSource.getValue() !== aNode.source)
 	  {
@@ -161,17 +179,17 @@ var declUpdateDeclDetail = function(aNode)
 	  UpdateResult();
 	  _dontUpdate = false;
 
-	  var lsourceTimeout = null;
 	  _edSource.getSession().on('change', function() 
 	  {
 	  	if (!_dontUpdate)
 	  	{
-			if (lsourceTimeout)
-				clearTimeout(lsourceTimeout);
+			if (_sourceTimeout)
+				clearTimeout(_sourceTimeout);
 
-		    lsourceTimeout = setTimeout(
+		    _sourceTimeout = setTimeout(
 		    	function() {
 		    		modelUpdateNode(_selectedNode.id, {"source": _edSource.getValue(), "state": "updated"});
+		    		_sourceTimeout = null;
 		    	}, 
 		    	1000
 		    );
@@ -180,16 +198,17 @@ var declUpdateDeclDetail = function(aNode)
 	    }
 	  });
 
-	  var ltransformTimeout = null;
 	  _edTransform.getSession().on('change', function() {
 	  	if (!_dontUpdate)
 	  	{
 		    //ValidateJson(_edTransform, "#transformmsg");
-			if (ltransformTimeout)
-				clearTimeout(ltransformTimeout);
-		    ltransformTimeout = setTimeout(
+			if (_transformTimeout)
+				clearTimeout(_transformTimeout);
+				
+		    _transformTimeout = setTimeout(
 		    	function() {
 					modelUpdateNode(_selectedNode.id, {"transform": _edTransform.getValue(), "state": "updated"});
+					_transformTimeout = null;
 		    	}, 
 		    	1000
 		    );
@@ -248,19 +267,31 @@ var declUpdateDeclDetail = function(aNode)
 	  $('#accBody').accordion("resize");
 
   }
-
-  var lsrcgen = null;
-  if (aNode.srcgen)
-  	lsrcgen = aNode.srcgen;
-  $('#lbsrcgen').attr('href', lsrcgen);
-	  
-  var SetTitle = function(aNode)
+  else
   {
-  	selSetCenterPanelTitle(aNode.name, aNode.state);
-  };
-
-  SetTitle(aNode);
+	  _selectedNode = aNode;
+  }
+  
+  declUpdateDeclDetail(aNode);
 };
+
+var declSetUnselected = function(aNode)
+{
+  if (aNode && _selectedNode && aNode.id !== _selectedNode.id)
+  {
+  	if (_sourceTimeout)
+  	{
+		modelUpdateNode(_selectedNode.id, {"source": _edSource.getValue(), "state": "updated"});
+		_sourceTimeout = null;
+  	}
+
+  	if (_transformTimeout)
+  	{
+		modelUpdateNode(_selectedNode.id, {"transform": _edTransform.getValue(), "state": "updated"});
+		_transformTimeout = null;
+  	}
+  }
+}
 
 RegisterModelObserver("decldetail", function(aNotifyObj)
 {
@@ -279,6 +310,24 @@ RegisterModelObserver("decldetail", function(aNotifyObj)
 			if (aNotifyObj.node.type === "decl")
 			{
 				declUpdateDeclDetail(aNotifyObj.node);
+			}
+		}
+		else if (aNotifyObj.type === "nodeselected")
+		{
+			if (aNotifyObj.node.type === "decl")
+			{
+				declSetSelected(aNotifyObj.node);
+			}
+			else
+			{
+				declSetSelected(null);
+			}
+		}
+		else if (aNotifyObj.type === "nodeunselected")
+		{
+			if (aNotifyObj.node.type === "decl")
+			{
+				declSetUnselected(aNotifyObj.node);
 			}
 		}
 	}

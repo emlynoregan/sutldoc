@@ -146,6 +146,15 @@ var treeClickNode = function(aNode)
   }
 };
 
+var treeBeforeSelectNode = function(aNode)
+{
+  if (aNode)
+  {
+  	  modelUnselectNode(aNode.attributes.node.id);
+  }
+  return true;
+};
+
 RegisterModelObserver("tree", function(aNotifyObj)
 {
 	if (aNotifyObj)
