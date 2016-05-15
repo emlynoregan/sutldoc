@@ -1,6 +1,6 @@
 
 /*eslint-env jquery, node*/
-/*globals RegisterModelObserver sUTLevaluateDecl NotifyExpandNode GetModelNodeById SetSelectedModelNode modelSetSelectedNode modelGetNodeById*/
+/*globals RegisterModelObserver sUTLevaluateDecl NotifyExpandNode GetModelNodeById SetSelectedModelNode modelSetSelectedNode modelGetNodeById modelUnselectNode*/
 
 var _treeLoadTree = function(aTreeId, aTree)
 {

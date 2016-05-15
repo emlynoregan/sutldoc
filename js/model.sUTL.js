@@ -114,7 +114,11 @@ var gmodelDist =
 	    "name": "^@.item.name",
 	    "id": "^@.item.id",
 	    "type": "dist",
-	    "published": "^@.item.published"
+	    "published": "^@.item.published",
+	    "order": {
+	    	"&": "coalesce",
+	    	"list": ["^@.item.order", 1]
+	    }
 	  }
 	},
 	{
@@ -129,7 +133,11 @@ var gmodelDist =
 	    "published": "^@.item.published",
 	    "source": "^@.item.source",
 	    "transform": "^@.item.transform",
-	    "result": "^@.item.result"
+	    "result": "^@.item.result",
+	    "order": {
+	    	"&": "coalesce",
+	    	"list": ["^@.item.order", 1.0]
+	    }
 	  }
 	}
 ];

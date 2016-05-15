@@ -255,6 +255,39 @@ var modelAddDeclNode = function(aParentNodeId)
 	_modelAddNode(aParentNodeId, "decl");
 };
 
+var modelMoveNode = function(aFromNodeId, aToParentNodeId, aToChildNodeId)
+{
+	var lfromNodeId = modelGetNodeById(aFromNodeId);
+	var ltoParentNodeId = modelGetNodeById(aToParentNodeId);
+	var ltoChildNodeId = modelGetNodeById(aToChildNodeId);
+	
+	if (lfromNodeId && ltoParentNodeId && !(ltoChildNodeId && ltoChildNodeId.parent !== lfromNodeId.id))
+	{
+		
+		var lnewNode = sUTLevaluateDecl({
+			"item": {
+				"name": "new" + aType,
+				"id": crapguid(),
+				"published": false
+			}
+		}, "construct" + aType);
+		
+		lnewNode.state = "added";
+
+		var lnewParentNode = sUTLevaluateDecl({
+				"node": lparentNode,
+				"children": [lnewNode]
+			}, 
+			"addchildrentomodelnode");
+
+		_modelSetNode(lnewParentNode);
+			
+		lnewNode = modelGetNodeById(lnewNode.id); // reload to get full info
+		
+		NotifyNodeAdded(lnewNode);
+	}
+};
+
 var modelGetUser = function(aHandler)
 {
     dataGetUser(aHandler);	

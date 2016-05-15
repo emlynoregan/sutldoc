@@ -1,0 +1,11 @@
+indexes:
+
+- kind: Dist
+  properties:
+  - name: parent
+  - name: order
+  
+- kind: Decl
+  properties:
+  - name: parent
+  - name: order

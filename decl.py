@@ -10,6 +10,7 @@ class Decl(ndb.Model):
 	parent = ndb.KeyProperty()
 	source = ndb.TextProperty()
 	transform = ndb.TextProperty()
+	order = ndb.FloatProperty()
 	
 	@classmethod
 	def GetById(cls, aId, aUser):
@@ -32,6 +33,7 @@ class Decl(ndb.Model):
 			"parent": self.parent.id() if self.parent and self.parent.id() != "__root__" else None,
 			"source": self.source,
 			"transform": self.transform,
+			"order": self.order,
 			"srcgen": "/srcgen/decl?id=%s&userid=%s" % (self.key.id(), self.user_id)
 		}		
 		
@@ -70,12 +72,13 @@ class Decl(ndb.Model):
 		ldecl.parent = ndb.Key(Dist, aJson.get("parent")) if aJson.get("parent") else ndb.Key(Dist, "__root__")
 		ldecl.source = aJson.get("source")
 		ldecl.transform = aJson.get("transform")
+		ldecl.order = aJson.get("order", 1.0)
 		ldecl.put()
 		
 	@classmethod
 	def GetAllForParent(cls, aParentId, aUser):
 		lparentId = aParentId if aParentId else "__root__"
-		lchildren = Decl.query(Decl.parent == ndb.Key(Dist, lparentId))
+		lchildren = Decl.query(Decl.parent == ndb.Key(Dist, lparentId)).order(Decl.order)
 		return [lchild for lchild in lchildren if lchild.user_id == aUser.user_id()]
 
 class Dist(ndb.Model):
@@ -83,6 +86,7 @@ class Dist(ndb.Model):
 	name = ndb.StringProperty()
 	published = ndb.BooleanProperty()
 	parent = ndb.KeyProperty()
+	order = ndb.FloatProperty()
 
 	@classmethod
 	def GetById(cls, aId, aUser):
@@ -98,7 +102,8 @@ class Dist(ndb.Model):
 			"id": self.key.id(),
 			"name": self.name,
 			"published": self.published,
-			"parent": self.parent.id() if self.parent and self.parent.id() != "__root__" else None
+			"parent": self.parent.id() if self.parent and self.parent.id() != "__root__" else None,
+			"order": self.order
 		}		
 
 	@classmethod
@@ -108,6 +113,7 @@ class Dist(ndb.Model):
 		ldist.name = aJson.get("name")
 		ldist.published = aJson.get("published")
 		ldist.parent = ndb.Key(Dist, aJson.get("parent")) if aJson.get("parent") else ndb.Key(Dist, "__root__")
+		ldist.order = aJson.get("order", 1.0)
 		ldist.put()
 
 	@classmethod
@@ -115,7 +121,7 @@ class Dist(ndb.Model):
 		logging.debug("Enter GetAllForParent")
 		lparentId = aParentId if aParentId else "__root__"
 		logging.debug("lparentId: %s" % lparentId)
-		lchildren = Dist.query(Dist.parent == ndb.Key(Dist, lparentId))
+		lchildren = Dist.query(Dist.parent == ndb.Key(Dist, lparentId)).order(Dist.order)
 		logging.debug("lchildren: %s" % lchildren)
 		return [lchild for lchild in lchildren if lchild.user_id == aUser.user_id()]
 		
