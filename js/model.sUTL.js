@@ -39,6 +39,33 @@ var gmodelDist =
 	  "requires": ["getmodelnodebyid"]
 	},
 	{
+	    "language": "sUTL0", 
+	    "name": "max_model_studio_emlynoregan_com", 
+	    "transform-t": {
+	        "&": "reduce", 
+	        "accum": "^@.list.0", 
+	        "list": "^@.list", 
+	        "t": {
+	            ":": {
+	                "&": "if", 
+	                "cond": {
+	                    ":": [
+	                        "&<", 
+	                        "^@.accum", 
+	                        "^@.item"
+	                    ]
+	                }, 
+	                "false": {
+	                    ":": "^@.accum"
+	                }, 
+	                "true": {
+	                    ":": "^@.item"
+	                }
+	            }
+	        }
+	    }
+	},
+	{
 	  "name": "setmodelnodebyid_data_studio_emlynoregan_com",
 	  "transform-t": {
 	    "&": "if",
@@ -77,33 +104,68 @@ var gmodelDist =
 	},
 	{
 	  "name": "addchildrentomodelnode_model_studio_emlynoregan_com",
-	  "transform-t": 
-	  {
+	  "transform-t": {
 	    "&": "addmaps",
 	    "map1": "^@.node",
 	    "map2": {
-	      "children": 
-	      {
-	      	"&": "removenulls",
-	      	"list": [
-	      	  "&&",
-	      	  "^@.node.children",
-		      {
-		      	"&": "map",
-		      	"list": "^@.children",
-		      	"t": {":": {
-		      		"&": "addmaps",
-		      		"map1": "^@.item",
-		      		"map2": {
-		      			"parent": "^@.node.id"
-		      		}
-		      	}}
-	      	  }
-      	    ]
-  	      }
+	      "children": {
+	        "&": "removenulls",
+	        "list": [
+	          "&&",
+	          "^@.node.children",
+	          [
+	            "^%",
+	            {
+	              "&": "reduce",
+	              "list": "^@.children",
+	              "accum": {
+	                "result": [],
+	                "order": [
+	                  "&+",
+	                  {
+	                    "&": "max_model_studio_emlynoregan_com",
+	                    "list": "&@.node.children.*.order"
+	                  },
+	                  1.0
+	                ]
+	              },
+	              "t": {
+	                ":": {
+	                  "result": [
+	                    "&&",
+	                    "^@.accum.result",
+	                    {
+	                      "&": "addmaps",
+	                      "map1": "^@.item",
+	                      "map2": {
+	                        "parent": "^@.node.id",
+	                        "order": {
+	                        	"&": "max_model_studio_emlynoregan_com",
+	                        	"list": ["^@.item.order", "^@.accum.order"]
+                        	}
+	                      }
+	                    }
+	                  ],
+	                  "order": [
+	                    "&+",
+	                    "^@.accum.order",
+	                    1.0
+	                  ]
+	                }
+	              }
+	            },
+	            "result"
+	          ]
+	        ]
+	      }
 	    }
 	  },
-	  "requires": ["addmaps", "map", "removenulls"]
+	  "requires": [
+	    "addmaps",
+	    "map",
+	    "removenulls",
+	    "max_model_studio_emlynoregan_com"
+	  ]
 	},
 	{
 	  "name": "constructdist_model_studio_emlynoregan_com",
