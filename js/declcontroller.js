@@ -244,9 +244,15 @@ var declUpdateDeclDetail = function(aNode)
 		    UpdateResult();
 	      }
 	  });
+
+	  $('#accBody').accordion("resize");
+
   }
 
-  $('#lbsrcgen').attr('href', aNode.srcgen);
+  var lsrcgen = null;
+  if (aNode.srcgen)
+  	lsrcgen = aNode.srcgen;
+  $('#lbsrcgen').attr('href', lsrcgen);
 	  
   var SetTitle = function(aNode)
   {
