@@ -152,3 +152,31 @@ class GetAllDeclsForParent(APIBase):
 	@classmethod
 	def GetAPIPath(cls):
 		return "/api/getchilddecls"
+
+class GetLibDecls(APIBase):
+
+	@classmethod
+	def JsonSchemaRequired(cls):
+		return False
+
+	def ProcessAPICall(self, aQueryJson, aUser):
+		lkeyId = aQueryJson.get("id")
+		
+		if lkeyId:
+			retval = []
+
+			lchildren = Dist.GetAllForParent(None, aUser)
+			for lchild in lchildren:
+				lresults, lfound = lchild.GetLibDecls(lkeyId)
+				if lresults:
+					retval.extend(lresults)
+				if lfound:
+					break
+
+			return 200, json.dumps(retval)
+		else:
+			return 400, "id required"
+
+	@classmethod
+	def GetAPIPath(cls):
+		return "/api/getlibdecls"

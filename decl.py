@@ -14,13 +14,20 @@ class Decl(ndb.Model):
 	
 	@classmethod
 	def GetById(cls, aId, aUser):
+		lid = aId if aId else "__root__"
 		luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
 		
-		logging.debug("GetById: %s, %s" % (aId, aUser))
-		retval = Decl.get_by_id(aId)
+		logging.debug("GetById: %s, %s" % (lid, aUser))
+		retval = Decl.get_by_id(lid)
 		logging.debug("retval: %s" % retval)
 		retval = retval if retval and retval.user_id == luserId else None
 		logging.debug("retval: %s" % retval)
+		return retval
+
+	def GetFullName(self):
+		lparent = self.parent.get() if self.parent else None
+		lparentName = lparent.GetFullName() if lparent else None
+		retval = "%s_%s" % (lparentName, self.name) if lparentName else self.name
 		return retval
 
 	def to_json(self):
@@ -28,6 +35,7 @@ class Decl(ndb.Model):
 			"type": "decl",
 			"id": self.key.id(),
 			"name": self.name,
+			"fullname": self.GetFullName(),
 			"requires": self.requires,
 			"published": self.published,
 			"parent": self.parent.id() if self.parent and self.parent.id() != "__root__" else None,
@@ -81,6 +89,13 @@ class Decl(ndb.Model):
 		lchildren = Decl.query(Decl.parent == ndb.Key(Dist, lparentId)).order(Decl.order)
 		return [lchild for lchild in lchildren if lchild.user_id == aUser.user_id()]
 
+	def GetLibDecls(self, aStopKeyId):
+		retval = [
+			self.to_decljson()
+		]
+		
+		return retval, self.key.id() == aStopKeyId
+
 class Dist(ndb.Model):
 	user_id = ndb.StringProperty()
 	name = ndb.StringProperty()
@@ -90,10 +105,20 @@ class Dist(ndb.Model):
 
 	@classmethod
 	def GetById(cls, aId, aUser):
+		lid = aId if aId else "__root__"
 		luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
 
-		retval = Dist.get_by_id(aId)
+		retval = Dist.get_by_id(lid)
 		retval = retval if retval and retval.user_id == luserId else None
+		return retval
+
+	def GetFullName(self):
+		lparent = self.parent.get() if self.parent else None
+		if lparent:
+			lparentName = lparent.GetFullName()
+			retval = "%s_%s" % (lparentName, self.name) if lparentName else self.name
+		else:
+			retval = None # leave root level out of naming
 		return retval
 
 	def to_json(self):
@@ -101,6 +126,7 @@ class Dist(ndb.Model):
 			"type": "dist",
 			"id": self.key.id(),
 			"name": self.name,
+			"fullname": self.GetFullName(),
 			"published": self.published,
 			"parent": self.parent.id() if self.parent and self.parent.id() != "__root__" else None,
 			"order": self.order
@@ -133,3 +159,38 @@ class Dist(ndb.Model):
 
 		ldeclChildrenKeys = Decl.query(Dist.parent == self.key)
 		ndb.delete_multi(list(ldeclChildrenKeys.iter(keys_only=True)))
+
+	def GetAllChildren(self):
+		logging.debug("Enter GetAllDistChildren")
+		lcdists = Dist.query(Dist.parent == self.key, Dist.user_id == self.user_id)
+		lcdecls = Decl.query(Decl.parent == self.key, Decl.user_id == self.user_id)
+		
+		lchildren = list(lcdists)
+		lchildren.extend(lcdecls)
+		
+		def getKey(child):
+			return child.order
+			
+		lchildren = sorted(lchildren, key=getKey)
+		
+		logging.debug("lchildren: %s" % lchildren)
+		return lchildren
+
+	def GetLibDecls(self, aStopKeyId):
+		logging.info("Enter GetLibDecls (%s)" % (self.name))				
+		retval = []
+		
+		lchildren = self.GetAllChildren()
+
+		lfound = False
+		
+		for lchild in lchildren:
+			lresults, lfound = lchild.GetLibDecls(aStopKeyId)
+			if lresults:
+				retval.extend(lresults)
+			if lfound:
+				break
+
+		logging.info("Leave GetLibDecls (%s, %s)" % (len(retval), lfound))				
+		return retval, lfound
+		
