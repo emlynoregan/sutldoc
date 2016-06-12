@@ -1,5 +1,5 @@
 
-/*globals sUTL gcoreDist gstudioDist updateDetail treeExpandNode updateTree gmodelDist gtreeDist gdataDist treeClickNode modelInitialiseTree NotifyLoaded*/
+/*globals sUTL gcoreDist gstudioDist updateDetail treeExpandNode updateTree gmodelDist gtreeDist gdataDist treeClickNode modelInitialiseTree NotifyLoaded treeBeforeSelectNode*/
 
 /*eslint-env jquery, browser*/
 

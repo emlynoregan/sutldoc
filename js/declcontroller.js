@@ -1,6 +1,6 @@
 /*eslint-env jquery, node*/
 
-/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace sUTL lsUTLLibDists NotifyErrorMessage*/
+/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace sUTL lsUTLLibDists NotifyErrorMessage modelGetLibDist modelGetNodeFullNameById*/
 
 var setupEditor = function(aId)
 {
@@ -83,6 +83,63 @@ var declUpdateDeclDetail = function(aNode)
 };
 
 
+var declUpdateResult = function(aNode)
+{
+    if (!(EditorIsInvalid(_edTransform, "Transform") || EditorIsInvalid(_edSource, "Source")))
+    {
+		NotifyErrorMessage("");
+
+        var lsourceJson = JSON.parse(_edSource.getValue());
+        var ltransform = JSON.parse(_edTransform.getValue());
+        var lrequires = GetRequires($('#vbDeclRequires').textbox('getValue'));
+        var ldists = modelGetLibDist(_selectedNode.id);
+		var lfullname = modelGetNodeFullNameById(_selectedNode.id);
+		
+        try
+        {
+            var lresult = null;
+
+            var ldecl = {
+            	"transform-t": ltransform,
+            	"name": lfullname
+            };
+            
+            if (lrequires)
+            {
+            	ldecl["requires"] = lrequires;
+            }
+
+            var clresult = sUTL.compilelib([ldecl], [ldists], true);
+
+            if (!clresult)
+            {
+              lresult = "** Can't load libs **";
+            }
+            else if ("fail" in clresult)
+            {
+              lresult = clresult["fail"];
+            }
+            else
+            {
+              lresult = sUTL.evaluate(lsourceJson, ltransform, clresult["lib"] || {}, 0);
+            }
+
+            _edResult.setValue(JSON.stringify(lresult, null, 2));
+            _edResult.gotoLine(0);
+
+			NotifyErrorMessage("");
+        }
+        catch (e)
+        {
+            console.log(e);
+            var lerrorMessage = "Result Exception: " + e.message;
+			NotifyErrorMessage(lerrorMessage);
+            _edResult.setValue(lerrorMessage);
+            _edResult.gotoLine(0);
+        }
+    }
+};
+
 var declSetSelected = function(aNode)
 {
   if (aNode && !(_selectedNode && (aNode.id === _selectedNode.id)))
@@ -91,8 +148,6 @@ var declSetSelected = function(aNode)
 
   	  NotifyErrorMessage("");
   	  
-//	  _selectedNode = aNode;
-  	
   	  if (!_edSource )
   	  {
 		  _edSource = setupEditor("edSource");
@@ -118,65 +173,9 @@ var declSetSelected = function(aNode)
 		_edTransform.gotoLine(0);
 	  }
 	
-	  var UpdateResult = function()
-	  {
-	  	if (aNode.id === _selectedNode.id)
-	  	{
-		    if (!(EditorIsInvalid(_edTransform, "Transform") || EditorIsInvalid(_edSource, "Source")))
-		    {
-				NotifyErrorMessage("");
-
-		        var lsourceJson = JSON.parse(_edSource.getValue());
-		        var ltransform = JSON.parse(_edTransform.getValue());
-		        var lrequires = GetRequires($('#vbDeclRequires').textbox('getValue'));
-		
-		        try
-		        {
-		            var lresult = null;
-	
-		            var ldecl = {
-		            	"transform-t": ltransform
-		            };
-		            
-		            if (lrequires)
-		            {
-		            	ldecl["requires"] = lrequires;
-		            }
-		
-		            var clresult = sUTL.compilelib([ldecl], [], true);
-		
-		            if (!clresult)
-		            {
-		              lresult = "** Can't load libs **";
-		            }
-		            else if ("fail" in clresult)
-		            {
-		              lresult = clresult["fail"];
-		            }
-		            else
-		            {
-		              lresult = sUTL.evaluate(lsourceJson, ltransform, clresult["lib"] || {}, 0);
-		            }
-		
-		            _edResult.setValue(JSON.stringify(lresult, null, 2));
-		            _edResult.gotoLine(0);
-
-					NotifyErrorMessage("");
-		        }
-		        catch (e)
-		        {
-		            console.log(e);
-		            var lerrorMessage = "Result Exception: " + e.message;
-					NotifyErrorMessage(lerrorMessage);
-		            _edResult.setValue(lerrorMessage);
-		            _edResult.gotoLine(0);
-		        }
-		    }
-	    }
-	  };
 
 	  _edResult.setValue("");
-	  UpdateResult();
+	  declUpdateResult();
 	  _dontUpdate = false;
 
 	  _edSource.getSession().on('change', function() 
@@ -194,7 +193,7 @@ var declSetSelected = function(aNode)
 		    	1000
 		    );
 
-		    UpdateResult();
+		    declUpdateResult();
 	    }
 	  });
 
@@ -212,7 +211,7 @@ var declSetSelected = function(aNode)
 		    	}, 
 		    	1000
 		    );
-		    UpdateResult();
+		    declUpdateResult();
 	    }
 	  });
 	  
@@ -260,18 +259,21 @@ var declSetSelected = function(aNode)
 	      onChange: function(value, params){
 		    var lvalue = $('#vbDeclRequires').textbox('getValue');
 		    modelUpdateNode(_selectedNode.id, {"requires": lvalue, "state": "updated"});
-		    UpdateResult();
+		    declUpdateResult();
 	      }
 	  });
 
 	  $('#accBody').accordion("resize");
 
+	  _dontUpdate = true;
+	  declUpdateResult();
+	  _dontUpdate = false;
   }
   else
   {
 	  _selectedNode = aNode;
   }
-  
+
   declUpdateDeclDetail(aNode);
 };
 
@@ -328,6 +330,13 @@ RegisterModelObserver("decldetail", function(aNotifyObj)
 			if (aNotifyObj.node.type === "decl")
 			{
 				declSetUnselected(aNotifyObj.node);
+			}
+		}
+		else if (aNotifyObj.type === "libupdated")
+		{
+			if (aNotifyObj.node.type === "decl" && aNotifyObj.node.id === _selectedNode.id) 
+			{
+				declUpdateResult();
 			}
 		}
 	}

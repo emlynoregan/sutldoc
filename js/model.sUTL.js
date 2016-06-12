@@ -9,6 +9,53 @@ var gmodelDist =
 	  }
 	},
 	{
+	  "name": "getnodefullnamebyid_model_studio_emlynoregan_com",
+	  "transform-t": 
+	  {
+	  	"!": {
+	  	  ":": {
+		    "&": "if",
+		    "cond": {":": 
+		      [
+		        "&=",
+		        "^@.node.id",
+		        "^@.id"
+		      ]
+		    },
+		    "true": {":": {
+		    	"&": "join",
+		    	"list": ["&&", "^@.node.name", "^@.names"],
+		    	"separator": "_"
+			}},
+		    "false": {
+		      "&": "reduce",
+		      "list": "^@.node.children",
+		      "accum": null,
+		      "t": {":": {
+		        "&": "if",
+		        "cond": {":": "^@.accum"},
+		        "true": {":": "^@.accum"},
+		        "false": {":": {
+		          "&": "getnodefullnamebyid",
+		          "node": "^@.item",
+		          "names": {
+		          	"&": "if",
+		          	"cond": {":": ["&=", "^@.node.id", "root"]},
+		          	"false": ["&&", "^@.node.name", "^@.names"]
+	          	  }
+		        }}
+		      }}
+		    }
+	      }
+	    },
+	    "names": {
+	    	"&": "coalesce",
+	    	"list": ["^@.names", []]
+	    }
+	  },
+	  "requires": ["getnodefullnamebyid", "join", "coalesce"]
+	},
+	{
 	  "name": "getmodelnodebyid_model_studio_emlynoregan_com",
 	  "transform-t": 
 	  {

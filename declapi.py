@@ -106,7 +106,7 @@ class SetDeclById(APIBase):
 	def ProcessAPICall(self, aQueryJson, aUser):
 		Decl.from_json(aQueryJson, aUser)
     
-		return 200, "ok"
+		return 200, json.dumps({"ok": True})
 
 	@classmethod
 	def GetAPIPath(cls):

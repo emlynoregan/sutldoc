@@ -1,7 +1,7 @@
 
 /*eslint-env meteor, browser*/
 
-/*globals RegisterModelObserver sUTLevaluateDecl modelGetNodeById modelAddChildrenToModelNode NotifyNodeExpanded modelReplaceNode*/
+/*globals RegisterModelObserver sUTLevaluateDecl modelGetNodeById modelAddChildrenToModelNode NotifyNodeExpanded modelReplaceNode modelSetLibDist*/
 
 var _postRequest = function(aUrl, aBodyJson, aResponseHandler)
 {
@@ -146,6 +146,20 @@ var GetDeclById = function(aId, aHandler)
 //};
 //
 
+var dataGetLibDist = function(aId)
+{
+  _postRequest(
+    "/api/getlibdecls",
+	{
+	  "id": aId
+	},
+	function(data)
+	{
+	  modelSetLibDist(aId, data);
+	}
+  );
+};
+
 var SetDeclById = function(aId, aDecl)
 {
 	_postRequest(
@@ -153,6 +167,7 @@ var SetDeclById = function(aId, aDecl)
 	  aDecl,
 	  function()
 	  {
+	  	dataGetLibDist(aId);
 	  }
 	);
 };

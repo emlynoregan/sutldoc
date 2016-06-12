@@ -1,9 +1,10 @@
-/*globals sUTLevaluateDecl crapguid dataGetUser*/
+/*globals sUTLevaluateDecl crapguid dataGetUser dataGetLibDist*/
 
 /*eslint-env meteor, node*/
 
 var gmodelTree = null;
 var gselectedNode = null;
+var glibdists = {};
 
 
 ////////////// Observers
@@ -23,7 +24,7 @@ var UnregisterModelObserver = function(aId)
 ////////////// Notify
 var _doNotify = function (aNotifyObj)
 {
-	console.log("notify: " + JSON.stringify(aNotifyObj))
+	console.log("notify: " + JSON.stringify(aNotifyObj));
 	_.map(_modelObservers, function(aObserverF){
 		aObserverF(aNotifyObj);
 	});
@@ -109,6 +110,14 @@ var NotifyErrorMessage = function(aErrorMessage)
 	});
 };
 
+var NotifyLibUpdated = function(aNode)
+{
+	_doNotify({
+		type: "libupdated",
+		node: aNode
+	});
+};
+
 ////////////// Model manipulation
 var _modelSetNode = function(aNode)
 {
@@ -130,6 +139,15 @@ var modelGetNodeById = function(aNodeId)
 		node: gmodelTree
 	}, 
 	"getmodelnodebyid");
+};
+
+var modelGetNodeFullNameById = function(aNodeId)
+{
+	return sUTLevaluateDecl({
+		id: aNodeId,
+		node: gmodelTree
+	}, 
+	"getnodefullnamebyid");
 };
 
 var modelAddChildrenToModelNode = function(aModelNode, aChildList)
@@ -198,7 +216,9 @@ var modelUpdateNode = function(aNodeId, aNodeDiff)
 		);
 		
 		_modelSetNode(lnewModelNode);
-			
+		
+		modelInvalidateLibDists(aNodeId);			
+		
 		NotifyNodeUpdated(lnewModelNode);
 	}
 };
@@ -211,6 +231,8 @@ var modelDeleteNode = function(aNodeId)
 	{
 		lnode.state = "deleted"; // do I need to mark all children "deleted" too?
 			
+		modelInvalidateLibDists(null);			
+
 		NotifyNodeDeleted(aNodeId);
 	}
 };
@@ -241,6 +263,8 @@ var _modelAddNode = function(aParentNodeId, aType)
 			
 		lnewNode = modelGetNodeById(lnewNode.id); // reload to get full info
 		
+		modelInvalidateLibDists(lnewNode.id);			
+
 		NotifyNodeAdded(lnewNode);
 	}
 };
@@ -291,4 +315,33 @@ var modelMoveNode = function(aFromNodeId, aToParentNodeId, aToChildNodeId)
 var modelGetUser = function(aHandler)
 {
     dataGetUser(aHandler);	
-}
+};
+
+var modelSetLibDist = function(aId, aLibDist)
+{
+	glibdists[aId] = aLibDist;
+	var lnode = modelGetNodeById(aId);
+	NotifyLibUpdated(lnode);
+};
+
+var modelGetLibDist = function(aId)
+{
+	var retval = glibdists[aId];
+	if (!retval)
+	{
+		dataGetLibDist(aId);
+		retval = [];
+	}
+
+	return retval;
+};
+
+var modelInvalidateLibDists = function(aId)
+{
+	var lmyLibDist = glibdists[aId];
+	glibdists = {};
+	if (lmyLibDist)
+	{
+		glibdists[aId] = lmyLibDist;
+	}
+};

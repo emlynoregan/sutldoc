@@ -26,8 +26,11 @@ class Decl(ndb.Model):
 
 	def GetFullName(self):
 		lparent = self.parent.get() if self.parent else None
+		logging.debug("Parent: %s" % lparent)
 		lparentName = lparent.GetFullName() if lparent else None
-		retval = "%s_%s" % (lparentName, self.name) if lparentName else self.name
+		logging.debug("Parent Name: %s" % lparentName)
+		retval = "%s_%s" % (self.name, lparentName) if lparentName else "%s" % self.name
+		logging.debug("retval: %s" % retval)
 		return retval
 
 	def to_json(self):
@@ -46,6 +49,7 @@ class Decl(ndb.Model):
 		}		
 		
 	def to_decljson(self):
+		logging.debug("Enter to_decljson")
 		try:
 			lrequires = [lrequire for lrequire in self.requires.split(" ") if lrequire]
 		except Exception, ex:
@@ -59,7 +63,7 @@ class Decl(ndb.Model):
 			ltransform = None
 
 		ldeclJson = {
-			"name": self.name,
+			"name": self.GetFullName(),
 			"language": "sUTL0"
 		}
 
@@ -92,7 +96,7 @@ class Decl(ndb.Model):
 	def GetLibDecls(self, aStopKeyId):
 		retval = [
 			self.to_decljson()
-		]
+		] if self.published and self.key.id() != aStopKeyId else []
 		
 		return retval, self.key.id() == aStopKeyId
 
@@ -114,12 +118,18 @@ class Dist(ndb.Model):
 
 	def GetFullName(self):
 		lparent = self.parent.get() if self.parent else None
-		if lparent:
-			lparentName = lparent.GetFullName()
-			retval = "%s_%s" % (lparentName, self.name) if lparentName else self.name
-		else:
-			retval = None # leave root level out of naming
+		lparentName = lparent.GetFullName() if lparent else None
+		retval = "%s_%s" % (self.name, lparentName) if lparentName else self.name
 		return retval
+
+#	def GetFullName(self):
+#		lparent = self.parent.get() if self.parent else None
+#		if lparent:
+#			lparentName = lparent.GetFullName()
+#			retval = "%s_%s" % (lparentName, self.name) if lparentName else self.name
+#		else:
+#			retval = None # leave root level out of naming
+#		return retval
 
 	def to_json(self):
 		return {
@@ -180,9 +190,9 @@ class Dist(ndb.Model):
 		logging.info("Enter GetLibDecls (%s)" % (self.name))				
 		retval = []
 		
-		lchildren = self.GetAllChildren()
-
 		lfound = False
+
+		lchildren = self.GetAllChildren()
 		
 		for lchild in lchildren:
 			lresults, lfound = lchild.GetLibDecls(aStopKeyId)
