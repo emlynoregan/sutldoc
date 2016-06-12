@@ -1,6 +1,6 @@
 /*eslint-env jquery, node*/
 
-/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace sUTL lsUTLLibDists NotifyErrorMessage modelGetLibDist modelGetNodeFullNameById*/
+/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace sUTL lsUTLLibDists NotifyErrorMessage modelGetLibDist modelGetNodeFullNameById modelGetLib modelSetLib*/
 
 var setupEditor = function(aId)
 {
@@ -108,8 +108,18 @@ var declUpdateResult = function(aNode)
             {
             	ldecl["requires"] = lrequires;
             }
-
-            var clresult = sUTL.compilelib([ldecl], [ldists], true);
+            
+            var llib = modelGetLib(_selectedNode.id);
+            
+            var clresult;
+            if (llib)
+            {
+            	clresult = {"lib": llib, "noset": true};
+        	}
+            else
+            {
+	            clresult = sUTL.compilelib([ldecl], [ldists], false);
+            }
 
             if (!clresult)
             {
@@ -121,7 +131,9 @@ var declUpdateResult = function(aNode)
             }
             else
             {
-              lresult = sUTL.evaluate(lsourceJson, ltransform, clresult["lib"] || {}, 0);
+            	if (!clresult["noset"])
+	            	modelSetLib(_selectedNode.id, clresult["lib"]);
+                lresult = sUTL.evaluate(lsourceJson, ltransform, clresult["lib"] || {}, 0);
             }
 
             _edResult.setValue(JSON.stringify(lresult, null, 2));
@@ -243,6 +255,7 @@ var declSetSelected = function(aNode)
 	
 	  $('#vbDeclName').textbox({
 	      onChange: function(value, params){
+		    modelSetLib(_selectedNode.id, null);
 		    var lvalue = $('#vbDeclName').textbox('getValue');
 	      	if (IsValid(lvalue))
 	      	{
@@ -251,12 +264,16 @@ var declSetSelected = function(aNode)
 	      }
 	  });
 
+	  var lrequires = _selectedNode.requires;
+	  if (!lrequires)
+	  	lrequires = null;
 	  $('#vbDeclRequires').textbox({
-	      value: _selectedNode.requires,
+	      value: lrequires,
 	  });
 	
 	  $('#vbDeclRequires').textbox({
 	      onChange: function(value, params){
+		    modelSetLib(_selectedNode.id, null);
 		    var lvalue = $('#vbDeclRequires').textbox('getValue');
 		    modelUpdateNode(_selectedNode.id, {"requires": lvalue, "state": "updated"});
 		    declUpdateResult();

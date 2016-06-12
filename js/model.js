@@ -5,6 +5,7 @@
 var gmodelTree = null;
 var gselectedNode = null;
 var glibdists = {};
+var glibs = {};
 
 
 ////////////// Observers
@@ -320,8 +321,14 @@ var modelGetUser = function(aHandler)
 var modelSetLibDist = function(aId, aLibDist)
 {
 	glibdists[aId] = aLibDist;
+	glibs[aId] = null;
 	var lnode = modelGetNodeById(aId);
 	NotifyLibUpdated(lnode);
+};
+
+var modelSetLib = function(aId, aLib)
+{
+	glibs[aId] = aLib;
 };
 
 var modelGetLibDist = function(aId)
@@ -336,10 +343,22 @@ var modelGetLibDist = function(aId)
 	return retval;
 };
 
+var modelGetLib = function(aId)
+{
+	var retval = glibs[aId];
+	if (!retval)
+	{
+		retval = null;
+	}
+
+	return retval;
+};
+
 var modelInvalidateLibDists = function(aId)
 {
 	var lmyLibDist = glibdists[aId];
 	glibdists = {};
+	glibs = {};
 	if (lmyLibDist)
 	{
 		glibdists[aId] = lmyLibDist;
