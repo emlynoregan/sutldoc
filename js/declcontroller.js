@@ -201,11 +201,10 @@ var declSetSelected = function(aNode)
 		    	function() {
 		    		modelUpdateNode(_selectedNode.id, {"source": _edSource.getValue(), "state": "updated"});
 		    		_sourceTimeout = null;
+				    declUpdateResult();
 		    	}, 
 		    	1000
 		    );
-
-		    declUpdateResult();
 	    }
 	  });
 
@@ -220,10 +219,10 @@ var declSetSelected = function(aNode)
 		    	function() {
 					modelUpdateNode(_selectedNode.id, {"transform": _edTransform.getValue(), "state": "updated"});
 					_transformTimeout = null;
+				    declUpdateResult();
 		    	}, 
-		    	1000
+		    	500
 		    );
-		    declUpdateResult();
 	    }
 	  });
 	  
