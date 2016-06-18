@@ -3,20 +3,30 @@
 /*globals RegisterModelObserver distUpdateDistDetail modelGetNodeById modelDeleteNode modelAddDistNode modelInitialiseTree modelAddDeclNode modelGetUser*/
 
 var _user = null;
+var _clipboard = null;
+var _bound = {};
+var _mcselectedNode = null;
 
 var menuUpdate = function(aSelectedNode)
 {
+	_mcselectedNode = aSelectedNode;
+	
 	var UpdateMenuItem = function(aItemId, aMenuId, aEnabled, aOnClickF)
 	{
 		var litem = $('#' + aItemId);
 		var lmenu = $('#' + aMenuId);
 
-		litem.unbind();
+		//litem.unbind();
 		var itemEl = litem[0];
 		
 		if (aEnabled)
 		{
-		    litem.bind('click', aOnClickF);
+			if (!_bound[aMenuId + "_" + aItemId])
+			{
+//				litem.unbind();
+			    litem.bind('click', aOnClickF);
+			    _bound[aMenuId + "_" + aItemId] = true;
+		    }
 		    
 			lmenu.menu('enableItem', itemEl);
 		}
@@ -36,44 +46,58 @@ var menuUpdate = function(aSelectedNode)
 
 	UpdateMenuItem(
 		"menuAddDist", "mm1",
-		aSelectedNode && (aSelectedNode.type === "root" || aSelectedNode.type ===  "dist"),
+		_mcselectedNode && (_mcselectedNode.type === "root" || _mcselectedNode.type ===  "dist"),
 		function() {
-	    	var lmodelNode = modelGetNodeById(aSelectedNode.id);
+	    	var lmodelNode = modelGetNodeById(_mcselectedNode.id);
 	    	
 	    	if (lmodelNode)
 	    	{
-				modelAddDistNode(aSelectedNode.id);
+				modelAddDistNode(_mcselectedNode.id);
     		}	
 	    }		
 	);
 
 	UpdateMenuItem(
 		"menuAddDecl", "mm1",
-		aSelectedNode && (aSelectedNode.type ===  "dist"),
+		_mcselectedNode && (_mcselectedNode.type ===  "dist"),
 		function() {
-	    	var lmodelNode = modelGetNodeById(aSelectedNode.id);
+	    	var lmodelNode = modelGetNodeById(_mcselectedNode.id);
 	    	
 	    	if (lmodelNode)
 	    	{
-				modelAddDeclNode(aSelectedNode.id);
+				modelAddDeclNode(_mcselectedNode.id);
     		}	
 	    }		
 	);
 
 	UpdateMenuItem(
-		"menuDelete", "mm1",
-		aSelectedNode && (aSelectedNode.type === "dist" || aSelectedNode.type ===  "decl"),
+		"menuCopy", "mm1",
+		_mcselectedNode && (_mcselectedNode.type === "dist" || _mcselectedNode.type ===  "decl"),
 		function() {
-	    	var lmodelNode = modelGetNodeById(aSelectedNode.id);
+			_clipboard = _mcselectedNode;
+			var lmnuClipboard = $('#menuClipboard');
+			var lmenu = $("#mm1");
+			lmenu.menu("setText", {
+				target: lmnuClipboard,
+				text: "Clipboard: " + _mcselectedNode.name
+			});
+		}
+	);
+
+	UpdateMenuItem(
+		"menuDelete", "mm1",
+		_mcselectedNode && (_mcselectedNode.type === "dist" || _mcselectedNode.type ===  "decl"),
+		function() {
+	    	var lmodelNode = modelGetNodeById(_mcselectedNode.id);
 	    	
 	    	if (lmodelNode)
 	    	{
 				$.messager.confirm(
 					'Confirm Delete',
-					'Are you sure you want to delete ' + aSelectedNode.name + '?',
+					'Are you sure you want to delete ' + _mcselectedNode.name + '?',
 					function(r){
 					    if (r){
-					        modelDeleteNode(aSelectedNode.id);
+					        modelDeleteNode(_mcselectedNode.id);
 					    }
 				    }
 				);

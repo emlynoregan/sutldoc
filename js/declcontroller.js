@@ -70,7 +70,7 @@ var _transformTimeout = null;
 var declUpdateDeclDetail = function(aNode)
 {
   var lsrcgen = null;
-  if (aNode.srcgen)
+  if (aNode && aNode.srcgen)
   	lsrcgen = aNode.srcgen;
   $('#lbsrcgen').attr('href', lsrcgen);
 	  
@@ -79,7 +79,8 @@ var declUpdateDeclDetail = function(aNode)
   	selSetCenterPanelTitle(aNode.name, aNode.state);
   };
 
-  SetTitle(aNode);
+  if (aNode)
+	SetTitle(aNode);
 };
 
 
