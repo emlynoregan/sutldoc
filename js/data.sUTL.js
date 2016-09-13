@@ -64,6 +64,10 @@ var gdataDist =
 	    "id": {
 	      "&": "coalesce",
 	      "list": ["^@.model.id", "^@.data.id"]
+	    },
+	    "order": {
+	      "&": "coalesce",
+	      "list": ["^@.model.order", "^@.data.order"]
 	    }
 	  },
 	  "requires": ["coalesce"]

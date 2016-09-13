@@ -142,6 +142,15 @@ var modelGetNodeById = function(aNodeId)
 	"getmodelnodebyid");
 };
 
+var modelGetPreviousNodeById = function(aNodeId)
+{
+	return sUTLevaluateDecl({
+		id: aNodeId,
+		node: gmodelTree
+	}, 
+	"getpreviousmodelnodebyid");
+};
+
 var modelGetNodeFullNameById = function(aNodeId)
 {
 	return sUTLevaluateDecl({
@@ -238,6 +247,44 @@ var modelDeleteNode = function(aNodeId)
 	}
 };
 
+var modelCopyNode = function(aCopyNodeId, aPositionNodeId)
+{
+	var lcopyNode = modelGetNodeById(aCopyNodeId);
+	var lpositionNode = modelGetNodeById(aPositionNodeId);
+	var lprevPositionNode = modelGetPreviousNodeById(aPositionNodeId);
+	var lparentNode = null;
+	if (lcopyNode)
+		var lparentNode = modelGetNodeById(lcopyNode.parent);
+	
+	if (lcopyNode && lpositionNode && lparentNode)
+	{
+		var lnewNode = sUTLevaluateDecl({
+			"from": lcopyNode,
+			"between": {
+				"before": lprevPositionNode.order,
+				"after": lpositionNode.order
+			},
+			"newid": crapguid()
+		}, "copynode");
+		
+		lnewNode.state = "added";
+
+		var lnewParentNode = sUTLevaluateDecl({
+				"node": lparentNode,
+				"children": [lnewNode]
+			}, 
+			"addchildrentomodelnode");
+
+		_modelSetNode(lnewParentNode);
+			
+		lnewNode = modelGetNodeById(lnewNode.id); // reload to get full info
+		
+		modelInvalidateLibDists(lnewNode.id);			
+
+		NotifyNodeAdded(lnewNode);
+	}
+};
+
 var _modelAddNode = function(aParentNodeId, aType)
 {
 	var lparentNode = modelGetNodeById(aParentNodeId);
@@ -280,39 +327,39 @@ var modelAddDeclNode = function(aParentNodeId)
 	_modelAddNode(aParentNodeId, "decl");
 };
 
-var modelMoveNode = function(aFromNodeId, aToParentNodeId, aToChildNodeId)
-{
-	var lfromNodeId = modelGetNodeById(aFromNodeId);
-	var ltoParentNodeId = modelGetNodeById(aToParentNodeId);
-	var ltoChildNodeId = modelGetNodeById(aToChildNodeId);
-	
-	if (lfromNodeId && ltoParentNodeId && !(ltoChildNodeId && ltoChildNodeId.parent !== lfromNodeId.id))
-	{
-		
-		var lnewNode = sUTLevaluateDecl({
-			"item": {
-				"name": "new" + aType,
-				"id": crapguid(),
-				"published": false
-			}
-		}, "construct" + aType);
-		
-		lnewNode.state = "added";
-
-		var lnewParentNode = sUTLevaluateDecl({
-				"node": lparentNode,
-				"children": [lnewNode]
-			}, 
-			"addchildrentomodelnode");
-
-		_modelSetNode(lnewParentNode);
-			
-		lnewNode = modelGetNodeById(lnewNode.id); // reload to get full info
-		
-		NotifyNodeAdded(lnewNode);
-	}
-};
-
+//var modelMoveNode = function(aFromNodeId, aToParentNodeId, aToChildNodeId)
+//{
+//	var lfromNodeId = modelGetNodeById(aFromNodeId);
+//	var ltoParentNodeId = modelGetNodeById(aToParentNodeId);
+//	var ltoChildNodeId = modelGetNodeById(aToChildNodeId);
+//	
+//	if (lfromNodeId && ltoParentNodeId && !(ltoChildNodeId && ltoChildNodeId.parent !== lfromNodeId.id))
+//	{
+//		
+//		var lnewNode = sUTLevaluateDecl({
+//			"item": {
+//				"name": "new" + aType,
+//				"id": crapguid(),
+//				"published": false
+//			}
+//		}, "construct" + aType);
+//		
+//		lnewNode.state = "added";
+//
+//		var lnewParentNode = sUTLevaluateDecl({
+//				"node": lparentNode,
+//				"children": [lnewNode]
+//			}, 
+//			"addchildrentomodelnode");
+//
+//		_modelSetNode(lnewParentNode);
+//			
+//		lnewNode = modelGetNodeById(lnewNode.id); // reload to get full info
+//		
+//		NotifyNodeAdded(lnewNode);
+//	}
+//};
+//
 var modelGetUser = function(aHandler)
 {
     dataGetUser(aHandler);	

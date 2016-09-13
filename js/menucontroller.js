@@ -3,7 +3,7 @@
 /*globals RegisterModelObserver distUpdateDistDetail modelGetNodeById modelDeleteNode modelAddDistNode modelInitialiseTree modelAddDeclNode modelGetUser*/
 
 var _user = null;
-var _clipboard = null;
+var _mcclipboard = null;
 var _bound = {};
 var _mcselectedNode = null;
 
@@ -16,14 +16,12 @@ var menuUpdate = function(aSelectedNode)
 		var litem = $('#' + aItemId);
 		var lmenu = $('#' + aMenuId);
 
-		//litem.unbind();
 		var itemEl = litem[0];
 		
 		if (aEnabled)
 		{
 			if (!_bound[aMenuId + "_" + aItemId])
 			{
-//				litem.unbind();
 			    litem.bind('click', aOnClickF);
 			    _bound[aMenuId + "_" + aItemId] = true;
 		    }
@@ -74,13 +72,31 @@ var menuUpdate = function(aSelectedNode)
 		"menuCopy", "mm1",
 		_mcselectedNode && (_mcselectedNode.type === "dist" || _mcselectedNode.type ===  "decl"),
 		function() {
-			_clipboard = _mcselectedNode;
+			_mcclipboard = _mcselectedNode;
 			var lmnuClipboard = $('#menuClipboard');
 			var lmenu = $("#mm1");
 			lmenu.menu("setText", {
 				target: lmnuClipboard,
 				text: "Clipboard: " + _mcselectedNode.name
 			});
+		}
+	);
+
+	UpdateMenuItem(
+		"menuPaste", "mm1",
+		_mcselectedNode && 
+		_mcclipboard &&
+		(
+			_mcselectedNode.type === "dist" || 
+			_mcselectedNode.type ===  "decl" 
+		),
+		function() {
+	    	var lmodelNode = modelGetNodeById(_mcselectedNode.id);
+	    	
+	    	if (lmodelNode)
+	    	{
+				modelCopyNode(_mcclipboard.id, _mcselectedNode.id);
+    		}	
 		}
 	);
 

@@ -68,7 +68,7 @@ var gmodelDist =
 	      ]
 	    },
 	    "true": {":": "^@.node"},
-	    "false": {
+	    "false": {":": {
 	      "&": "reduce",
 	      "list": "^@.node.children",
 	      "accum": null,
@@ -81,9 +81,63 @@ var gmodelDist =
 	          "node": "^@.item"
 	        }}
 	      }}
-	    }
+	    }}
 	  },
 	  "requires": ["getmodelnodebyid"]
+	},
+	{
+	  "name": "getpreviousmodelnodebyid_model_studio_emlynoregan_com",
+	  "transform-t": 
+	  {
+	  	"!": {":": {
+		  	"!": {":": {
+		  		"&": "if",
+		  		"cond": {":": "^@.parent"},
+		  		"true": {":": 
+		  			[
+		  			  "^%",
+		  		      {
+			  			"&": "reduce",
+			  			"list": "^@.parent.children",
+			  			"accum": {
+			  				"prev": null,
+			  				"curr": null,
+			  				"found": null
+			  			},
+			  			"t": {":": {
+			  			  "prev": "^@.item",
+			  			  "found": {
+			  				"&": "coalesce",
+			  				"list": [
+			  					"^@.accum.found",
+			  					{
+			  						"&": "if",
+			  						"cond": {":": ["&=", "^@.item.id", "^@.id"]},
+			  						"true": {":": "^@.accum.prev"}
+		  						}
+		  					]
+		  				  }
+			  			}}
+	  				  },
+	  				  "found"
+		  			]
+		  		},
+		  		"false": {
+		  			"id": "^@.id",
+		  			"this": "^@.this",
+		  			"parent": "^@.parent"
+		  		}
+		  	}},
+		  	"parent": {
+		  		"&": "getmodelnodebyid",
+		  		"id": "^@.this.parent"
+		  	}
+	  	}},
+	  	"this": {
+	  		"&": "getmodelnodebyid"
+	  	}
+	  },
+	  "requires": ["getmodelnodebyid", "coalesce"]
 	},
 	{
 	    "language": "sUTL0", 
@@ -156,54 +210,64 @@ var gmodelDist =
 	    "map1": "^@.node",
 	    "map2": {
 	      "children": {
-	        "&": "removenulls",
-	        "list": [
-	          "&&",
-	          "^@.node.children",
-	          [
-	            "^%",
-	            {
-	              "&": "reduce",
-	              "list": "^@.children",
-	              "accum": {
-	                "result": [],
-	                "order": [
-	                  "&+",
-	                  {
-	                    "&": "max_model_studio_emlynoregan_com",
-	                    "list": "&@.node.children.*.order"
-	                  },
-	                  1.0
-	                ]
-	              },
-	              "t": {
-	                ":": {
-	                  "result": [
-	                    "&&",
-	                    "^@.accum.result",
-	                    {
-	                      "&": "addmaps",
-	                      "map1": "^@.item",
-	                      "map2": {
-	                        "parent": "^@.node.id",
-	                        "order": {
-	                        	"&": "max_model_studio_emlynoregan_com",
-	                        	"list": ["^@.item.order", "^@.accum.order"]
-                        	}
-	                      }
-	                    }
-	                  ],
-	                  "order": [
-	                    "&+",
-	                    "^@.accum.order",
-	                    1.0
-	                  ]
-	                }
-	              }
-	            },
-	            "result"
-	          ]
-	        ]
+	      	"&": "quicksort",
+	      	"keypath": "order",
+			"list": {
+		        "&": "removenulls",
+		        "list": [
+		          "&&",
+		          "^@.node.children",
+		          [
+		            "^%",
+		            {
+		              "&": "reduce",
+		              "list": "^@.children",
+		              "accum": {
+		                "result": [],
+		                "order": [
+		                  "&+",
+		                  {
+		                    "&": "max_model_studio_emlynoregan_com",
+		                    "list": "&@.node.children.*.order"
+		                  },
+		                  1.0
+		                ]
+		              },
+		              "t": {
+		                ":": {
+		                  "result": [
+		                    "&&",
+		                    "^@.accum.result",
+		                    {
+		                      "&": "addmaps",
+		                      "map1": "^@.item",
+		                      "map2": {
+		                        "parent": "^@.node.id",
+		                        "order": {
+		                          "&": "coalesce",
+		                          "list": [
+									"^@.item.order",	                          
+			                        {
+			                        	"&": "max_model_studio_emlynoregan_com",
+			                        	"list": ["^@.item.order", "^@.accum.order"]
+		                        	}
+	                        	  ]
+	                        	}
+		                      }
+		                    }
+		                  ],
+		                  "order": [
+		                    "&+",
+		                    "^@.accum.order",
+		                    1.0
+		                  ]
+		                }
+		              }
+		            },
+		            "result"
+		          ]
+		        ]
+		    }
 	      }
 	    }
 	  },
@@ -211,7 +275,9 @@ var gmodelDist =
 	    "addmaps",
 	    "map",
 	    "removenulls",
-	    "max_model_studio_emlynoregan_com"
+	    "max_model_studio_emlynoregan_com",
+	    "coalesce",
+	    "quicksort"
 	  ]
 	},
 	{
@@ -226,7 +292,7 @@ var gmodelDist =
 	    "published": "^@.item.published",
 	    "order": {
 	    	"&": "coalesce",
-	    	"list": ["^@.item.order", 1]
+	    	"list": ["^@.item.order", 1.0]
 	    }
 	  }
 	},
@@ -242,11 +308,54 @@ var gmodelDist =
 	    "published": "^@.item.published",
 	    "source": "^@.item.source",
 	    "transform": "^@.item.transform",
-	    "result": "^@.item.result",
 	    "order": {
 	    	"&": "coalesce",
 	    	"list": ["^@.item.order", 1.0]
 	    }
 	  }
+	},
+	{
+	  "name": "copynode_model_studio_emlynoregan_com",
+	  "args": {
+	  	"from": "the item to copy"
+	  },
+	  "transform-t": 
+	  {
+	  	  "&": "addmaps",
+	  	  "map1": {
+		    "name": ["&+", "^@.from.name", "copy"],
+		    "id": "^@.newid",
+		    "type": "^@.from.type",
+		    "published": false,
+		    "order": [
+		    	"&/", 
+		    	[
+		    		"&+", 
+		    		{
+		    			"&": "coalesce", 
+		    			"list": [
+		    				"^@.between.before", 
+		    				"^@.between.after"
+		    			]
+		    		}, 
+		    		"^@.between.after"
+		    	], 
+		    	2
+		    ]
+	  	  },
+	  	  "map2": 
+		  {
+		  	"&": "switch",
+		  	"value": "^@.from.type",
+		  	"cases": [
+		  		["decl", {
+				    "source": "^@.from.source",
+				    "transform": "^@.from.transform"
+		  		}],
+		  		{}
+	  		]
+  		  }
+	  },
+	  "requires": ["addmaps", "switch", "coalesce"]
 	}
 ];
