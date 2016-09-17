@@ -141,6 +141,36 @@ var gmodelDist =
 	},
 	{
 	    "language": "sUTL0", 
+	    "name": "getlastmodelnodebyid_model_studio_emlynoregan_com", 
+	    "requires": [
+	        "getmodelnodebyid", 
+	        "coalesce"
+	    ], 
+	    "transform-t": {
+	        "!": {
+	            ":": {
+	                "!": {
+	                    ":": {
+	                        "&": "reduce", 
+	                        "list": "^@.parent.children", 
+	                        "t": {
+	                            ":": "^@.item"
+	                        }
+	                    }
+	                }, 
+	                "parent": {
+	                    "&": "getmodelnodebyid", 
+	                    "id": "^@.this.parent"
+	                }
+	            }
+	        }, 
+	        "this": {
+	            "&": "getmodelnodebyid"
+	        }
+	    }
+	},
+	{
+	    "language": "sUTL0", 
 	    "name": "max_model_studio_emlynoregan_com", 
 	    "transform-t": {
 	        "&": "reduce", 

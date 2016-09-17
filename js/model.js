@@ -151,6 +151,15 @@ var modelGetPreviousNodeById = function(aNodeId)
 	"getpreviousmodelnodebyid");
 };
 
+var modelGetLastSiblingNodeById = function(aNodeId)
+{
+	return sUTLevaluateDecl({
+		id: aNodeId,
+		node: gmodelTree
+	}, 
+	"getlastmodelnodebyid");
+};
+
 var modelGetNodeFullNameById = function(aNodeId)
 {
 	return sUTLevaluateDecl({
@@ -253,15 +262,19 @@ var modelCopyNode = function(aCopyNodeId, aPositionNodeId)
 	var lpositionNode = modelGetNodeById(aPositionNodeId);
 	var lprevPositionNode = modelGetPreviousNodeById(aPositionNodeId);
 	var lparentNode = null;
-	if (lcopyNode)
-		var lparentNode = modelGetNodeById(lcopyNode.parent);
+	if (lpositionNode)
+		var lparentNode = modelGetNodeById(lpositionNode.parent);
 	
 	if (lcopyNode && lpositionNode && lparentNode)
 	{
+		var lprevOrder = lpositionNode.order / 2;
+		if (lprevPositionNode)
+			lprevOrder = lprevPositionNode.order;
+		
 		var lnewNode = sUTLevaluateDecl({
 			"from": lcopyNode,
 			"between": {
-				"before": lprevPositionNode.order,
+				"before": lprevOrder,
 				"after": lpositionNode.order
 			},
 			"newid": crapguid()

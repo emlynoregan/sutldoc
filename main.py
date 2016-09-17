@@ -7,17 +7,18 @@ from htmlhandler import HtmlHandler
 from selfapi import SelfApiHandler
 from logoutapi import LogoutApiHandler
 from declapi import GetDeclById, SetDeclById, GetDistById, SetDistById, \
-	GetAllDeclsForParent, GetAllDistsForParent, DelDeclById, DelDistById, GetLibDecls
+    GetAllDeclsForParent, GetAllDistsForParent, DelDeclById, DelDistById, GetLibDecls
 from srcgen import SrcGenDecl
+from embed import EmbedHandler, OEmbedHandler
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.response.write('''
-        <html>
-		<body>
-	        <a href="/doc/sutldoc">sUTL doc</a>
-	    </body>
-	    </html>
+            <html>
+            <body>
+                <a href="/doc/sutldoc">sUTL doc</a>
+	        </body>
+	        </html>
         ''')
 
 _routes = [
@@ -26,8 +27,8 @@ _routes = [
 ]
 
 def AddRoute(aApiHandler):
-	_routes.append((aApiHandler.GetAPIPath(), aApiHandler))
-	
+    _routes.append((aApiHandler.GetAPIPath(), aApiHandler))
+
 AddRoute(SelfApiHandler)
 AddRoute(LogoutApiHandler)	
 AddRoute(GetDeclById) 
@@ -40,7 +41,7 @@ AddRoute(GetAllDeclsForParent)
 AddRoute(GetAllDistsForParent)
 AddRoute(SrcGenDecl)
 AddRoute(GetLibDecls)
+AddRoute(EmbedHandler)
+AddRoute(OEmbedHandler)
 
 app = webapp2.WSGIApplication(_routes, debug=True)
-
-    

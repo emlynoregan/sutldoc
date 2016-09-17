@@ -29,7 +29,7 @@ class SetDistById(APIBase):
 
 	def ProcessAPICall(self, aQueryJson, aUser):
 		Dist.from_json(aQueryJson, aUser)
-    
+
 		return 200, "ok"
 
 	@classmethod
@@ -163,15 +163,7 @@ class GetLibDecls(APIBase):
 		lkeyId = aQueryJson.get("id")
 		
 		if lkeyId:
-			retval = []
-
-			lchildren = Dist.GetAllForParent(None, aUser)
-			for lchild in lchildren:
-				lresults, lfound = lchild.GetLibDecls(lkeyId)
-				if lresults:
-					retval.extend(lresults)
-				if lfound:
-					break
+			retval = Dist.GetLibDecls(aUser, lkeyId)
 
 			return 200, json.dumps(retval)
 		else:

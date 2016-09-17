@@ -70,10 +70,21 @@ var _transformTimeout = null;
 var declUpdateDeclDetail = function(aNode)
 {
   var lsrcgen = null;
-  if (aNode && aNode.srcgen)
-  	lsrcgen = aNode.srcgen;
-  $('#lbsrcgen').attr('href', lsrcgen);
-	  
+//  if (aNode && aNode.srcgen)
+//  	lsrcgen = aNode.srcgen;
+//  $('#lbsrcgen').attr('href', lsrcgen);
+
+  if (aNode)
+  {
+	  $('#lbsrcgen').attr('href', '/srcgen/decl?id=' + aNode.id);
+	  $('#lbembed').attr('href', '/embed/embeddecl?id=' + aNode.id);
+  }
+  else
+  {
+	  $('#lbsrcgen').attr('href', null);
+	  $('#lbembed').attr('href', null);
+  }
+  
   var SetTitle = function(aNode)
   {
   	selSetCenterPanelTitle(aNode.name, aNode.state);

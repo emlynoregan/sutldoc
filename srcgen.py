@@ -53,13 +53,13 @@ class SrcGenDecl(SrcGenBase):
 	def GetDeclId(self):
 		return self.request.get("id")
 
-	def GetUserId(self):
-		return self.request.get("userid")
+# 	def GetUserId(self):
+# 		return self.request.get("userid")
 		
 	def GetDecl(self):
 		lid = self.GetDeclId()
-		luserId = self.GetUserId()
-		ldecl = Decl.GetById(lid, luserId)
+		#luserId = self.GetUserId()
+		ldecl = Decl.GetById(lid)
 		return ldecl
 		
 	def RequiredUser(self):
