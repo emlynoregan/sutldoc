@@ -77,12 +77,12 @@ var declUpdateDeclDetail = function(aNode)
   if (aNode)
   {
 	  $('#lbsrcgen').attr('href', '/srcgen/decl?id=' + aNode.id);
-	  $('#lbembed').attr('href', '/embed/embeddecl?id=' + aNode.id);
+	  $('#lbtry').attr('href', '/try?id=' + aNode.id);
   }
   else
   {
 	  $('#lbsrcgen').attr('href', null);
-	  $('#lbembed').attr('href', null);
+	  $('#lbtry').attr('href', null);
   }
   
   var SetTitle = function(aNode)

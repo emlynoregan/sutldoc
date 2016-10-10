@@ -5,7 +5,7 @@ import webapp2
 import logging
 import urlparse
 
-class EmbedHandler(HtmlHandler):
+class TryHandler(HtmlHandler):
     def GetDeclId(self):
         return self.request.get("id")
 
@@ -30,7 +30,7 @@ class EmbedHandler(HtmlHandler):
 
     @classmethod
     def GetAPIPath(cls):
-        return "/embed/(embeddecl)"
+        return "/(try)"
     
 class OEmbedHandler(webapp2.RequestHandler):
     def get(self, *args): 
@@ -49,7 +49,7 @@ class OEmbedHandler(webapp2.RequestHandler):
             logging.info(lurlParsed)
 
             ldecl = None
-            if lurlParsed.path == "/embed/embeddecl":
+            if lurlParsed.path == "/try":
                 lquery = lurlParsed.query
                 lqdict = urlparse.parse_qs(lquery)
                 lid = lqdict.get("id")[0] if lqdict.get("id") else None

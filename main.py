@@ -9,7 +9,7 @@ from logoutapi import LogoutApiHandler
 from declapi import GetDeclById, SetDeclById, GetDistById, SetDistById, \
     GetAllDeclsForParent, GetAllDistsForParent, DelDeclById, DelDistById, GetLibDecls
 from srcgen import SrcGenDecl
-from embed import EmbedHandler, OEmbedHandler
+from tryhandler import TryHandler, OEmbedHandler
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -41,7 +41,7 @@ AddRoute(GetAllDeclsForParent)
 AddRoute(GetAllDistsForParent)
 AddRoute(SrcGenDecl)
 AddRoute(GetLibDecls)
-AddRoute(EmbedHandler)
+AddRoute(TryHandler)
 AddRoute(OEmbedHandler)
 
 app = webapp2.WSGIApplication(_routes, debug=True)
