@@ -68,12 +68,34 @@ class Decl(ndb.Model):
         	"language": "sUTL0"
         }
         
-        if ltransform:
-            ldeclJson["transform-t"] = ltransform
+        #if ltransform:
+        ldeclJson["transform-t"] = ltransform
         if lrequires:
             ldeclJson["requires"] = lrequires
         
         return ldeclJson
+
+    def to_decljsonstr(self):
+        logging.debug("Enter to_decljsonstr")
+        try:
+            lrequiresSplit = self.requires.split(" ") if self.requires else []
+            lrequires = "[" + ", ".join(lrequiresSplit) + "]"
+        except Exception, _:
+            logging.exception("fail")
+            lrequires = []
+        
+        ltransform = self.transform
+        
+        ldeclJsonStr = """
+        {
+            "name": "%s",
+            "language": "sUTL0",
+            "transform-t": %s,
+            "requires": %s
+        }
+""" % (self.GetFullName(), ltransform, lrequires)
+        
+        return ldeclJsonStr
 
     @classmethod
     def from_json(self, aJson, aUser):

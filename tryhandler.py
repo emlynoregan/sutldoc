@@ -16,9 +16,17 @@ class TryHandler(HtmlHandler):
         llib = Dist.GetLibDecls(ldecl.user_id, ldecl.key.id())
 
         if ldecl:
+            #ldeclJsonStr = ldecl.to_decljsonstr()
+            ldecljson = ldecl.to_decljson()
+            #ltransformjson = ldecljson.get("transform-t")
+            ltransformJsonStr = ldecl.transform
             retval = {
-        		"decl": json.dumps(ldecl.to_decljson()),
-                "source": json.dumps(ldecl.to_json()["source"]),
+        		"decl": json.dumps(ldecljson, sort_keys=True, indent=2),
+#                "transform": json.dumps(ltransformjson, sort_keys=True, indent=2),
+#                "decl": ldeclJsonStr,
+                "transform": ldecl.transform,
+                #"source": json.dumps(ldecl.to_json()["source"]),
+                "source": ldecl.source,
                 "lib": json.dumps(llib),
                 "url": self.request.url
         	}

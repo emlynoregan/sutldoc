@@ -52,6 +52,8 @@
 	    No sUTL declaration found
 	{% endif %}
 	</div>
+<div style="display:none" id="inittransform">{{transform}}</div>
+<div style="display:none" id="initsource">{{source}}</div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="/js/sUTL.js"></script>
     <script>
@@ -86,12 +88,11 @@
     var forceUpdate = function(aEditor)
     {
     	aEditor.resize(true);
-//        aEditor.gotoLine(1);
-//        aEditor.gotoLine(0);
     }
-    
+
+    var linitialTransformStr = $("#inittransform").text(); 
+    var linitialSourceStr = $("#initsource").text(); 
     var ldecl = {{decl | safe}};
-    var lsource = {{source | safe}};
     var llib = {{lib | safe}};
     
     var _edSource = null;
@@ -123,14 +124,14 @@
 	    $('#tt').tabs('select', ldefaultTab);
 	    	
 		var edix = -1;
-	  	if (lsource)
-	  		_edSource.setValue(lsource, edix);
+	  	if (linitialSourceStr)
+	  		_edSource.setValue(linitialSourceStr, edix);
 		else
 			_edSource.setValue("", edix);
 	
 	  	if (ldecl)
 	  	{
-	  		_edTransform.setValue(JSON.stringify(ldecl["transform-t"], null, 2), edix);
+	  		_edTransform.setValue(linitialTransformStr, edix);
 	  		_edDeclaration.setValue(JSON.stringify(ldecl, null, 2), edix);
 	  	}
 		else
@@ -146,11 +147,10 @@
 	        {
 	            var lsource = JSON.parse(_edSource.getValue());
 	            var ltransform = JSON.parse(_edTransform.getValue());
-	            var lnewDecl = jQuery.extend(true, {}, ldecl);
-	            lnewDecl["transform-t"] = ltransform;
-	            ldecl = lnewDecl;
+	            //var ldecl = jQuery.extend(true, {}, ldecl);
+	            ldecl["transform-t"] = ltransform;
 	
-	            _edDeclaration.setValue(JSON.stringify(lnewDecl, null, 2), edix);
+	            _edDeclaration.setValue(JSON.stringify(ldecl, null, 2), edix);
 	
 	            var lresult = null;
 	
