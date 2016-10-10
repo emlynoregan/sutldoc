@@ -24,21 +24,27 @@
     {% if decl %}
         <div data-options="region:'center'">
 			<div id="accBody" class="easyui-tabs" data-options="onSelect:OnSelect" style="width: 100%; height: 100%;">
-				<div title="sUTL Declaration" data-options="selected:true" style="padding:0px;">	
+				<div title="Transform" data-options="selected:true" style="padding:0px;">	
 					<div class="ss-item">
 						<div id="edTransform" class="editor" name="transform" style="min-width: 200px; width:100%; height:90%;"></div>
 						<div id="transformmsg" class="message"></div>
 					</div>
 		       	</div>    
-		         	<div title="Source" style="padding:0px;">	
+		        <div title="Source" style="padding:0px;">	
 		           	<div class="ss-item">
 						<div id="edSource" class="editor" name="source" style="min-width: 200px; width:100%; height:90%;"></div>
 		               	<div id="sourcemsg" class="message"></div>
 					</div>
 		       	</div>    
-		         	<div title="Result" style="padding:0px;">	
+		        <div title="Result" style="padding:0px;">	
 		           	<div class="ss-item">
-					<div id="edResult" class="editor" name="result" style="min-width: 200px; width:100%; height:90%;"></div>
+						<div id="edResult" class="editor" name="result" style="min-width: 200px; width:100%; height:90%;"></div>
+					</div>
+		       	</div>    
+		        <div title="Declaration" style="padding:0px;">	
+					<div class="ss-item">
+						<div id="edDeclaration" class="editor" name="declaration" style="min-width: 200px; width:100%; height:90%;"></div>
+					</div>
 				</div>
 			</div>    
 		</div>
@@ -49,12 +55,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="/js/sUTL.js"></script>
     <script>
-    
     var ldecl = {{decl | safe}};
     var lsource = {{source | safe}};
     var llib = {{lib | safe}};
     
-    var setupEditor = function(aId)
+    var setupEditor = function(aId, aReadOnly)
     {
         var editor = ace.edit(aId);
         editor.setTheme("ace/theme/monokai");
@@ -62,6 +67,7 @@
         editor.getSession().setTabSize(2);
         editor.getSession().setUseSoftTabs(true);
         editor.setFontSize(14);
+        editor.setReadOnly(aReadOnly);
         return editor;
     };
     
@@ -75,21 +81,29 @@
     var _edSource = null;
     var _edTransform = null;
     var _edResult = null;
+    var _edDeclaration = null;
 
-	_edSource = setupEditor("edSource");
-	_edTransform = setupEditor("edTransform");
-	_edResult = setupEditor("edResult");
+	_edSource = setupEditor("edSource", false);
+	_edTransform = setupEditor("edTransform", false);
+	_edResult = setupEditor("edResult", true);
+	_edDeclaration = setupEditor("edDeclaration", true);
 
 	var edix = -1;
   	if (lsource)
   		_edSource.setValue(lsource, edix);
 	else
 		_edSource.setValue("", edix);
-    
+
   	if (ldecl)
-  		_edTransform.setValue(JSON.stringify(ldecl, null, 2), edix);
+  	{
+  		_edTransform.setValue(JSON.stringify(ldecl["transform-t"], null, 2), edix);
+  		_edDeclaration.setValue(JSON.stringify(ldecl, null, 2), edix);
+  	}
 	else
+	{
 		_edTransform.setValue("", edix);
+  		_edDeclaration.setValue("", edix);
+	}
 	
 	_edResult.setValue("", edix);
 
@@ -97,8 +111,13 @@
         try
         {
             var lsource = JSON.parse(_edSource.getValue());
-            var ldecl = JSON.parse(_edTransform.getValue());
-            
+            var ltransform = JSON.parse(_edTransform.getValue());
+            var lnewDecl = jQuery.extend(true, {}, ldecl);
+            lnewDecl["transform-t"] = ltransform;
+            ldecl = lnewDecl;
+
+            _edDeclaration.setValue(JSON.stringify(lnewDecl, null, 2), edix);
+
             var lresult = null;
 
             var clresult;
@@ -140,6 +159,7 @@
 	{
 		forceUpdate(_edSource);
     	forceUpdate(_edResult);
+    	forceUpdate(_edDeclaration);
 	}
     </script>
    </body>
