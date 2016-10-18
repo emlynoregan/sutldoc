@@ -61,8 +61,16 @@
                     <input id="vbDistName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname', width:500" />
                 </div>
                 <div class="ss-item">
+                    <label for="name">Distribution Id:</label>
+                    <input id="tbDistId" class="easyui-textbox" type="text" name="name" data-options="readonly:true, width:500" />
+                </div>
+                <div class="ss-item">
                   <label for="published">Published:</label>
 					   <input id="sbDistPublished" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">
+                </div>
+                <div class="ss-item">
+                    <label for="requiresdist">Requires Distributions:</label>
+                    <input id="tbDistRequires" class="easyui-textbox" type="text" name="requiresdist" data-options="width:500"/>
                 </div>
             </form>
           </div>
@@ -89,7 +97,7 @@
 								<a href="#" id="lbsrcgen" class="linkboxitem easyui-linkbutton" target="_blank">Get Declaration JSON</a>
 							</div>
 							<div>
-								<a href="#" id="lbtry" class="linkboxitem easyui-linkbutton" target="_blank">Get "Try" Page</a>
+								<a href="#" id="lbtry" class="linkboxitem easyui-linkbutton" target="_blank">Try Page</a>
 							</div>
 			            </div>
 			        </div>

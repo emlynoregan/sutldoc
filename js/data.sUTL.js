@@ -45,6 +45,10 @@ var gdataDist =
 	      "&": "coalesce",
 	      "list": ["^@.model.name", "^@.data.name"]
 	    },
+	    "requires": {
+	      "&": "coalesce",
+	      "list": ["^@.model.requires", "^@.data.requires"]
+	    },
 	    "published": {
 	      "&": "coalesce",
 	      "list": ["^@.model.published", "^@.data.published"]

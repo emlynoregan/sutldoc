@@ -116,18 +116,26 @@ class Decl(ndb.Model):
         lchildren = Decl.query(Decl.parent == ndb.Key(Dist, lparentId)).order(Decl.order)
         return [lchild for lchild in lchildren if lchild.user_id == aUser.user_id()]
 
-    def _GetLibDecls(self, aStopKeyId):
-        retval = [
-			self.to_decljson()
-		] if self.published and self.key.id() != aStopKeyId else []
+    def GetLibDecls(self, aUser):
+        lparent = self.parent.get() if self.parent else None
+        if lparent:
+            return lparent.GetLibDecls(aUser)
+        else:
+            return []
         
-        return retval, self.key.id() == aStopKeyId
+#     def _GetLibDecls(self, aStopKeyId):
+#         retval = [
+# 			self.to_decljson()
+# 		] if self.published and self.key.id() != aStopKeyId else []
+#         
+#         return retval, self.key.id() == aStopKeyId
 
 class Dist(ndb.Model):
     user_id = ndb.StringProperty()
     name = ndb.StringProperty()
     published = ndb.BooleanProperty()
     parent = ndb.KeyProperty()
+    requires = ndb.StringProperty()
     order = ndb.FloatProperty()
     
     @classmethod
@@ -139,20 +147,20 @@ class Dist(ndb.Model):
         retval = retval if retval and retval.user_id == luserId else None
         return retval
 
+    @classmethod
+    def GetByIdForRead(cls, aId, aUser):
+        lid = aId if aId else "__root__"
+        luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
+        
+        retval = Dist.get_by_id(lid)
+        retval = retval if retval and ((retval.user_id == luserId) or (retval.published)) else None
+        return retval
+    
     def GetFullName(self):
         lparent = self.parent.get() if self.parent else None
         lparentName = lparent.GetFullName() if lparent else None
         retval = "%s_%s" % (self.name, lparentName) if lparentName else self.name
         return retval
-
-#	def GetFullName(self):
-#		lparent = self.parent.get() if self.parent else None
-#		if lparent:
-#			lparentName = lparent.GetFullName()
-#			retval = "%s_%s" % (lparentName, self.name) if lparentName else self.name
-#		else:
-#			retval = None # leave root level out of naming
-#		return retval
 
     def to_json(self):
         return {
@@ -161,6 +169,7 @@ class Dist(ndb.Model):
             "name": self.name,
             "fullname": self.GetFullName(),
             "published": self.published,
+            "requires": self.requires,
             "parent": self.parent.id() if self.parent and self.parent.id() != "__root__" else None,
             "order": self.order
         }
@@ -171,6 +180,7 @@ class Dist(ndb.Model):
         ldist.user_id = aUser.user_id()
         ldist.name = aJson.get("name")
         ldist.published = aJson.get("published")
+        ldist.requires = aJson.get("requires")
         ldist.parent = ndb.Key(Dist, aJson.get("parent")) if aJson.get("parent") else ndb.Key(Dist, "__root__")
         ldist.order = aJson.get("order", 1.0)
         ldist.put()
@@ -210,36 +220,77 @@ class Dist(ndb.Model):
         logging.debug("lchildren: %s" % lchildren)
         return lchildren
 
-    def _GetLibDecls(self, aStopKeyId):
-        logging.info("Enter GetLibDecls (%s)" % (self.name))				
+#     def _GetLibDecls(self, aStopKeyId):
+#         logging.info("Enter GetLibDecls (%s)" % (self.name))				
+#         retval = []
+#         
+#         lfound = False
+#         
+#         lchildren = self.GetAllChildren()
+#         
+#         for lchild in lchildren:
+#             lresults, lfound = lchild._GetLibDecls(aStopKeyId)
+#             if lresults:
+#                 retval.extend(lresults)
+#             if lfound:
+#                 break
+#         
+#         logging.info("Leave GetLibDecls (%s, %s)" % (len(retval), lfound))				
+#         return retval, lfound
+    
+    def GetRequiresList(self):
+        try:
+            lrequiresSplit = self.requires.split(" ") if self.requires else []
+            lrequires = [lrequire for lrequire in lrequiresSplit if lrequire]
+        except Exception, _:
+            logging.exception("fail")
+            lrequires = None    
+        return lrequires
+
+    def GetAllRequires(self, aUserId):
         retval = []
         
-        lfound = False
-        
+        lparent = self.parent.get() if self.parent else None
+        if lparent:
+            retval = lparent.GetAllRequires(aUserId)
+
+        lrequiresList = self.GetRequiresList()
+        retval.extend(lrequiresList)
+
+        return retval
+
+    def GetLocalExpansion(self):
+        retval = []
         lchildren = self.GetAllChildren()
-        
         for lchild in lchildren:
-            lresults, lfound = lchild._GetLibDecls(aStopKeyId)
-            if lresults:
-                retval.extend(lresults)
-            if lfound:
-                break
-        
-        logging.info("Leave GetLibDecls (%s, %s)" % (len(retval), lfound))				
-        return retval, lfound
+            if lchild.published:
+                if isinstance(lchild, Decl):
+                    retval.append(lchild.to_decljson())
+                else:
+                    retval.extend(lchild.GetLocalExpansion())
+        return retval
     
-    @classmethod 
-    def GetLibDecls(cls, aUser, aStopKeyId):
+    def GetLibDecls(self, aUser):
         retval = []
 
         luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
 
-        lchildren = cls.GetAllForParent(None, luserId)
-        for lchild in lchildren:
-            lresults, lfound = lchild._GetLibDecls(aStopKeyId)
-            if lresults:
-                retval.extend(lresults)
-            if lfound:
-                break
+        #1: Get combined requires list for all parent dists
+        lallRequires = self.GetAllRequires(luserId)
+
+        for ldeclKeyId in lallRequires:
+            ldecl = Dist.GetByIdForRead(ldeclKeyId, aUser)
+            
+            if ldecl:
+                llocalExpansion = ldecl.GetLocalExpansion()
+                retval.extend(llocalExpansion)
+        
+#         lchildren = cls.GetAllForParent(None, luserId)
+#         for lchild in lchildren:
+#             lresults, lfound = lchild._GetLibDecls(aStopKeyId)
+#             if lresults:
+#                 retval.extend(lresults)
+#             if lfound:
+#                 break
                 
         return retval

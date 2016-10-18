@@ -1,25 +1,25 @@
 from apibase import APIBase
 import json
 from decl import Decl, Dist
-from google.appengine.ext import ndb
+#from google.appengine.ext import ndb
 
 class GetDistById(APIBase):
-	@classmethod
-	def JsonSchemaRequired(cls):
-		return False
+    @classmethod
+    def JsonSchemaRequired(cls):
+        return False
 
-	def ProcessAPICall(self, aQueryJson, aUser):
-		lkeyId = aQueryJson.get("id")
-		lresult = Dist.GetById(lkeyId, aUser)
+    def ProcessAPICall(self, aQueryJson, aUser):
+        lkeyId = aQueryJson.get("id")
+        lresult = Dist.GetById(lkeyId, aUser)
 
-		if lresult:
-			return 200, json.dumps(lresult.to_json())
-		else:
-			return 404, "Dist not found"
+        if lresult:
+            return 200, json.dumps(lresult.to_json())
+        else:
+            return 404, "Dist not found"
 
-	@classmethod
-	def GetAPIPath(cls):
-		return "/api/getdist"
+    @classmethod
+    def GetAPIPath(cls):
+        return "/api/getdist"
 
 class SetDistById(APIBase):
 
@@ -154,21 +154,22 @@ class GetAllDeclsForParent(APIBase):
 		return "/api/getchilddecls"
 
 class GetLibDecls(APIBase):
+    @classmethod
+    def JsonSchemaRequired(cls):
+        return False
 
-	@classmethod
-	def JsonSchemaRequired(cls):
-		return False
+    def ProcessAPICall(self, aQueryJson, aUser):
+        lkeyId = aQueryJson.get("id")
+       
+        ldecl = Decl.GetById(lkeyId, aUser) if lkeyId else None
+        
+        if ldecl:
+            retval = ldecl.GetLibDecls(aUser)
+            
+            return 200, json.dumps(retval)
+        else:
+            return 400, "id required"
 
-	def ProcessAPICall(self, aQueryJson, aUser):
-		lkeyId = aQueryJson.get("id")
-		
-		if lkeyId:
-			retval = Dist.GetLibDecls(aUser, lkeyId)
-
-			return 200, json.dumps(retval)
-		else:
-			return 400, "id required"
-
-	@classmethod
-	def GetAPIPath(cls):
-		return "/api/getlibdecls"
+    @classmethod
+    def GetAPIPath(cls):
+        return "/api/getlibdecls"
