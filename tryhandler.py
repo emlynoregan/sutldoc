@@ -13,9 +13,10 @@ class TryHandler(HtmlHandler):
         ldeclId = self.GetDeclId()
 
         ldecl = Decl.GetById(ldeclId)
-        llib = Dist.GetLibDecls(ldecl.user_id, ldecl.key.id())
+        #llib = Dist.GetLibDecls(ldecl.user_id, ldecl.key.id())
 
         if ldecl:
+            llib = ldecl.GetLibDecls(ldecl.user_id)
             #ldeclJsonStr = ldecl.to_decljsonstr()
             ldecljson = ldecl.to_decljson()
             #ltransformjson = ldecljson.get("transform-t")
