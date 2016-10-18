@@ -277,6 +277,8 @@ class Dist(ndb.Model):
 
         #1: Get combined requires list for all parent dists
         lallRequires = self.GetAllRequires(luserId)
+        lallRequires.append(self.key.id())
+        lallRequires = set(lallRequires)
 
         for ldeclKeyId in lallRequires:
             ldecl = Dist.GetByIdForRead(ldeclKeyId, aUser)
