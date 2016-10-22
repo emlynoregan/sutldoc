@@ -103,8 +103,8 @@ class SrcGenDist(SrcGenBase):
             return "Dist not found"
         else:
             self.response.headers['Content-Type'] = 'application/json'
-            luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
-            ldecls = ldist.GetAllDeclsForAncestorTransitive(aUser, self.GetPublishedOnly() or (ldist.user_id != luserId))        
+            luserId = (aUser if isinstance(aUser, basestring) else aUser.user_id()) if aUser else None
+            ldecls = ldist.GetAllDeclsForAncestorTransitive(aUser, self.GetPublishedOnly() or not luserId or (ldist.user_id != luserId))        
             ldeclsSource = [ldecl.to_decljson() for ldecl in ldecls]
             return json.dumps(ldeclsSource, indent=2)
 

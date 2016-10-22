@@ -193,7 +193,7 @@ class Dist(ndb.Model):
         lchildren = Dist.query(Dist.parent == ndb.Key(Dist, lparentId)).order(Dist.order)
         logging.debug("lchildren: %s" % lchildren)
         luserId = (aUser if isinstance(aUser, basestring) else aUser.user_id()) if aUser else None
-        return [lchild for lchild in lchildren if lchild.user_id == luserId]
+        return [lchild for lchild in lchildren if not aUser or lchild.user_id == luserId]
 
     def DeleteChildren(self):
         ldistChildren = Dist.query(Dist.parent == self.key)
@@ -239,10 +239,11 @@ class Dist(ndb.Model):
 #         return retval, lfound
     
     def GetAllDeclsForAncestorTransitive(self, aUser, aPublishedOnly=True):
-        retval = Decl.GetAllForParent(self.key.id(), aUser)
-        
         if aPublishedOnly:
+            retval = Decl.GetAllForParent(self.key.id(), None)
             retval = [ldecl for ldecl in retval if ldecl.published]
+        else:
+            retval = Decl.GetAllForParent(self.key.id(), aUser)
 
         ldirectDists = Dist.query(Dist.parent == self.key).order(Dist.order)
         
