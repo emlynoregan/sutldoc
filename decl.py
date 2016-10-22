@@ -114,7 +114,7 @@ class Decl(ndb.Model):
     def GetAllForParent(cls, aParentId, aUser):
         lparentId = aParentId if aParentId else "__root__"
         lchildren = Decl.query(Decl.parent == ndb.Key(Dist, lparentId)).order(Decl.order)
-        return [lchild for lchild in lchildren if lchild.user_id == aUser.user_id()]
+        return [lchild for lchild in lchildren if not aUser or (lchild.user_id == aUser.user_id())]
 
     def GetLibDecls(self, aUser):
         lparent = self.parent.get() if self.parent else None
