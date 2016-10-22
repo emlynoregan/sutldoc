@@ -185,7 +185,7 @@ var declSetSelected = function(aNode)
 	  	if (aNode.source)
 		  _edSource.setValue(aNode.source);
 		else
-		  _edSource.setValue("");
+		  _edSource.setValue("{}");
 		_edSource.gotoLine(0);
 	  }
 	  if (_edTransform.getValue() !== aNode.transform)
@@ -193,7 +193,7 @@ var declSetSelected = function(aNode)
 	  	if (aNode.transform)
 		  _edTransform.setValue(aNode.transform);
 		else
-		  _edTransform.setValue("");
+		  _edTransform.setValue("{}");
 		_edTransform.gotoLine(0);
 	  }
 	

@@ -8,6 +8,14 @@ var distUpdateDistDetail = function(aNode)
 {
 	if (aNode && !(_lastSelectedNode && aNode.id == _lastSelectedNode.id))
 	{
+	  if (aNode)
+	  {
+		  $('#lbsrcgendist').attr('href', '/srcgen/dist?id=' + aNode.id);
+		  $('#lbsrcgendistpublished').attr('href', '/srcgen/dist?publishedonly=true&id=' + aNode.id);
+		  $('#lbsrcgendistlib').attr('href', '/srcgen/distlib?id=' + aNode.id);
+		  $('#lbsrcgendistlibonly').attr('href', '/srcgen/distlib?libonly=true&id=' + aNode.id);
+	  }
+
 	  _lastSelectedNode = aNode;
 	
 	  NotifyErrorMessage("");
@@ -70,6 +78,14 @@ var distUpdateDistDetail = function(aNode)
 		    modelUpdateNode(aNode.id, {"requires": lvalue, "state": "updated"});
 	      }
 	  });
+	}
+	
+	if (!aNode)
+	{
+	  $('#lbsrcgendist').attr('href', null);
+	  $('#lbsrcgendistpublished').attr('href', null);
+	  $('#lbsrcgendistlib').attr('href', null);
+	  $('#lbsrcgendistlibonly').attr('href', null);
 	}
 };
 

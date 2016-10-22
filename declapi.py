@@ -153,6 +153,31 @@ class GetAllDeclsForParent(APIBase):
 	def GetAPIPath(cls):
 		return "/api/getchilddecls"
 
+class GetDistributionSourceForDist(APIBase):
+
+    @classmethod
+    def JsonSchemaRequired(cls):
+        return False
+
+    def ProcessAPICall(self, aQueryJson, aUser):
+        lkeyId = aQueryJson.get("id")
+        lpublishedOnly = aQueryJson.get("publishedonly")
+        lresult = Dist.GetByIdForRead(lkeyId, aUser) if lkeyId else None
+
+        if not lresult:
+            luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
+            ldecls = lresult.GetAllDeclsForAncestorTransitive(aUser, lpublishedOnly or (lresult.user_id != luserId))        
+        
+            return 200, json.dumps(
+                [ldecl.to_decljson() for ldecl in ldecls]
+            )
+        else:
+            return 404, "Decl not found"
+
+    @classmethod
+    def GetAPIPath(cls):
+        return "/api/getchilddecls"
+
 class GetLibDecls(APIBase):
     @classmethod
     def JsonSchemaRequired(cls):

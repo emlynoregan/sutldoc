@@ -34,6 +34,8 @@
 		        <div id="menuDelete" data-options="iconCls:'icon-del'">Delete</div>
 		    </div>
 		    <div id="mm2" style="width:100px;">
+		        <a href="http://www.sutllang.com/how-to/" class="easyui-linkbutton" data-options="plain:true" target="blank_">Get Started</a>
+		        <a href="http://www.sutllang.com/intro/" class="easyui-linkbutton" data-options="plain:true" target="blank_">sUTL Reference</a>
 		        <div id="menuAbout">About</div>
 		    </div>
 		    <div id="mm3" style="width:100px;">
@@ -52,26 +54,60 @@
         </div>
         <div data-options="region:'center',title:'Detail'">
           <div id="rootdetail" class="ss-detail ss-show">
-            root
+            <h2 style="padding:10">Welcome to sUTL Studio!</h2>
+            
+            <p style="padding:10">
+            To get started with sUTL Studio, try adding a distribution to the root node, 
+            by selected root and choosing <b>Add Distribution</b> from the menu.
+            </p>
+            
+            <p style="padding:10">
+            Then select the distribution and choose <b>Add Declaration</b> from the menu.
+            </p>
+            
+            <p style="padding:10">
+            Or just head back to the <a href="http://www.sutllang.com">sutllang site</a>.
           </div>
           <div id="distdetail" class="ss-detail">
             <form id="distForm" method="post">
-                <div class="ss-item">
-                    <label for="name">Name:</label>
-                    <input id="vbDistName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname', width:500" />
-                </div>
-                <div class="ss-item">
-                    <label for="name">Distribution Id:</label>
-                    <input id="tbDistId" class="easyui-textbox" type="text" name="name" data-options="readonly:true, width:500" />
-                </div>
-                <div class="ss-item">
-                  <label for="published">Published:</label>
-					   <input id="sbDistPublished" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">
-                </div>
-                <div class="ss-item">
-                    <label for="requiresdist">Requires Distributions:</label>
-                    <input id="tbDistRequires" class="easyui-textbox" type="text" name="requiresdist" data-options="width:500"/>
-                </div>
+            	<div class="properties">
+	                <div class="ss-item">
+	                    <label for="name">Name:</label>
+	                    <input id="vbDistName" class="easyui-textbox" type="text" name="name" data-options="required:true, validType:'distname', width:500" />
+	                </div>
+	                <div class="ss-item">
+	                    <label for="name">Distribution Id:</label>
+	                    <input id="tbDistId" class="easyui-textbox" type="text" name="name" data-options="readonly:true, width:500" />
+	                </div>
+	                <div class="ss-item">
+	                  <label for="published">Published:</label>
+						   <input id="sbDistPublished" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">
+	                </div>
+	                <div class="ss-item">
+	                    <label for="requiresdist">Requires Distributions:</label>
+	                    <input id="tbDistRequires" class="easyui-textbox" type="text" name="requiresdist" data-options="width:500"/>
+	                </div>
+	                <p style="padding:10">
+	                Want to make the core library available to your declarations? Add this key to "Requires Distributions" above:
+	                </p>
+	                <pre>
+  67b0dfc4-d630-dd16-4c1a-daed241fed49
+	                </pre>
+	            </div>
+	            <div class="linkbox">
+					<div>
+						<a href="#" id="lbsrcgendist" class="linkboxitem easyui-linkbutton" target="_blank">Distribution JSON</a>
+					</div>
+					<div>
+						<a href="#" id="lbsrcgendistpublished" class="linkboxitem easyui-linkbutton" target="_blank">Public Distribution JSON</a>
+					</div>
+					<div>
+						<a href="#" id="lbsrcgendistlib" class="linkboxitem easyui-linkbutton" target="_blank">Distribution + Libraries JSON</a>
+					</div>
+					<div>
+						<a href="#" id="lbsrcgendistlibonly" class="linkboxitem easyui-linkbutton" target="_blank">Libraries Only JSON</a>
+					</div>
+	            </div>
             </form>
           </div>
           <div id="decldetail" class="ss-detail">
@@ -94,7 +130,7 @@
 			            </div>
 			            <div class="linkbox">
 							<div>
-								<a href="#" id="lbsrcgen" class="linkboxitem easyui-linkbutton" target="_blank">Get Declaration JSON</a>
+								<a href="#" id="lbsrcgen" class="linkboxitem easyui-linkbutton" target="_blank">Declaration JSON</a>
 							</div>
 							<div>
 								<a href="#" id="lbtry" class="linkboxitem easyui-linkbutton" target="_blank">Try Page</a>

@@ -139,12 +139,12 @@ class Dist(ndb.Model):
     order = ndb.FloatProperty()
     
     @classmethod
-    def GetById(cls, aId, aUser):
+    def GetById(cls, aId, aUser = None):
         lid = aId if aId else "__root__"
-        luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
+        luserId = (aUser if isinstance(aUser, basestring) else aUser.user_id()) if aUser else None
         
         retval = Dist.get_by_id(lid)
-        retval = retval if retval and retval.user_id == luserId else None
+        retval = (retval if retval and retval.user_id == luserId else None) if aUser else retval
         return retval
 
     @classmethod
@@ -238,6 +238,20 @@ class Dist(ndb.Model):
 #         logging.info("Leave GetLibDecls (%s, %s)" % (len(retval), lfound))				
 #         return retval, lfound
     
+    def GetAllDeclsForAncestorTransitive(self, aUser, aPublishedOnly=True):
+        retval = Decl.GetAllForParent(self.key.id(), aUser)
+        
+        if aPublishedOnly:
+            retval = [ldecl for ldecl in retval if ldecl.published]
+
+        ldirectDists = Dist.query(Dist.parent == self.key).order(Dist.order)
+        
+        for ldist in ldirectDists:
+            if not (aPublishedOnly and not ldist.published):
+                retval.extend(ldist.GetAllDeclsForAncestorTransitive(aUser, aPublishedOnly))
+            
+        return retval
+
     def GetRequiresList(self):
         try:
             lrequiresSplit = self.requires.split(" ") if self.requires else []
@@ -270,14 +284,15 @@ class Dist(ndb.Model):
                     retval.extend(lchild.GetLocalExpansion())
         return retval
     
-    def GetLibDecls(self, aUser):
+    def GetLibDecls(self, aUser, aLibOnly = False):
         retval = []
 
         luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
 
         #1: Get combined requires list for all parent dists
         lallRequires = self.GetAllRequires(luserId)
-        lallRequires.append(self.key.id())
+        if not aLibOnly:
+            lallRequires.append(self.key.id())
         lallRequires = set(lallRequires)
 
         for ldeclKeyId in lallRequires:

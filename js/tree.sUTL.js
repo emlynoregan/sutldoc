@@ -12,7 +12,7 @@ var gtreeDist =
 	  		  	"&": "switch",
 	  		  	"value": "^@.node.type",
 	  		  	"cases": [
-	  		  	  [["root", "decl", "dist"], 
+	  		  	  [["root", "dist"], 
 	  		  	  {
 	  		  	    "&": "if",
 	  		  	    "cond": {":": {

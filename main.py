@@ -8,7 +8,7 @@ from selfapi import SelfApiHandler
 from logoutapi import LogoutApiHandler
 from declapi import GetDeclById, SetDeclById, GetDistById, SetDistById, \
     GetAllDeclsForParent, GetAllDistsForParent, DelDeclById, DelDistById, GetLibDecls
-from srcgen import SrcGenDecl
+from srcgen import SrcGenDecl, SrcGenDist, SrcGenDistLib
 from tryhandler import TryHandler, OEmbedHandler
 
 class MainHandler(webapp2.RequestHandler):
@@ -40,6 +40,8 @@ AddRoute(DelDistById)
 AddRoute(GetAllDeclsForParent) 
 AddRoute(GetAllDistsForParent)
 AddRoute(SrcGenDecl)
+AddRoute(SrcGenDist)
+AddRoute(SrcGenDistLib)
 AddRoute(GetLibDecls)
 AddRoute(TryHandler)
 AddRoute(OEmbedHandler)

@@ -78,3 +78,69 @@ class SrcGenDecl(SrcGenBase):
 	@classmethod
 	def GetAPIPath(cls):
 		return "/srcgen/decl"
+
+class SrcGenDist(SrcGenBase):
+    def GetDistId(self):
+        return self.request.get("id")
+
+    def GetPublishedOnly(self):
+        return self.request.get("publishedonly")
+
+    def GetDist(self):
+        lid = self.GetDistId()
+        #luserId = self.GetUserId()
+        ldist = Dist.GetById(lid)
+        return ldist
+        
+    def RequiredUser(self):
+        ldist = self.GetDist()
+        return ldist.user_id if ldist and not ldist.published else None
+    
+    def ProcessSrcGen(self, aUser):
+        ldist = self.GetDist()
+        if not ldist:
+            self.response.status = 404
+            return "Dist not found"
+        else:
+            self.response.headers['Content-Type'] = 'application/json'
+            luserId = aUser if isinstance(aUser, basestring) else aUser.user_id()
+            ldecls = ldist.GetAllDeclsForAncestorTransitive(aUser, self.GetPublishedOnly() or (ldist.user_id != luserId))        
+            ldeclsSource = [ldecl.to_decljson() for ldecl in ldecls]
+            return json.dumps(ldeclsSource, indent=2)
+
+    @classmethod
+    def GetAPIPath(cls):
+        return "/srcgen/dist"
+    
+class SrcGenDistLib(SrcGenBase):
+    def GetDistId(self):
+        return self.request.get("id")
+
+    def GetLibOnly(self):
+        return self.request.get("libonly")
+
+    def GetDist(self):
+        lid = self.GetDistId()
+        #luserId = self.GetUserId()
+        ldist = Dist.GetById(lid)
+        return ldist
+        
+    def RequiredUser(self):
+        ldist = self.GetDist()
+        return ldist.user_id if ldist and not ldist.published else None
+    
+    def ProcessSrcGen(self, aUser):
+        ldist = self.GetDist()
+        if not ldist:
+            self.response.status = 404
+            return "Dist not found"
+        else:
+            self.response.headers['Content-Type'] = 'application/json'
+            
+            llibdecls = ldist.GetLibDecls(aUser, self.GetLibOnly())
+            #ldeclsSource = [ldecl.to_decljson() for ldecl in llibdecls]
+            return json.dumps(llibdecls, indent=2)
+
+    @classmethod
+    def GetAPIPath(cls):
+        return "/srcgen/distlib"
