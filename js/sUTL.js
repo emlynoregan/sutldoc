@@ -24,10 +24,10 @@
 
     function get(obj, key, def)
     {
-        if (isObject(obj) && key in obj && obj[key] != null)
-            return obj[key];
+        if (key in obj && obj[key] != null)
+            return obj[key]
         else
-            return def;
+            return def
     }
 
     function gettype(item)
@@ -386,6 +386,69 @@
                 }
                 else
                     return null;
+            },
+            "split": function(parentscope, scope, l, src, tt, b, h)
+            {
+                var lvalue = get(scope, "value", null)
+                var lsep = get(scope, "sep", ",")
+                var lmax = get(scope, "max", null)
+                var retval = null;
+
+                if (!(lvalue && isString(lvalue)))
+                {
+
+                }
+                else if (!(lsep && isString(lsep)))
+                {
+
+                }
+                else if (lmax && !isNumber(lmax))
+                {
+
+                }
+                else
+                {
+                    if (lmax)
+                        retval = lvalue.split(lsep, lmax)
+                    else
+                        retval = lvalue.split(lsep)
+                } 
+                return retval;
+            },
+            "trim": function(parentscope, scope, l, src, tt, b, h)
+            {
+                var lvalue = get(scope, "value", null)
+                var retval = null;
+
+                if (!(lvalue && isString(lvalue)))
+                {
+
+                }
+                else
+                {
+                    retval = lvalue.trim();
+                } 
+                return retval;
+            },
+            "pos": function(parentscope, scope, l, src, tt, b, h)
+            {
+                var lvalue = get(scope, "value", null)
+                var lsub = get(scope, "sub", null)
+                var retval = null;
+
+                if (!(lvalue && isString(lvalue)))
+                {
+
+                }
+                else if (!(lsub && isString(lsub)))
+                {
+
+                }
+                else
+                {
+                    retval = lvalue.indexOf(lsub);
+                } 
+                return retval;
             }
         }
 
