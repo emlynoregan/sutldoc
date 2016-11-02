@@ -145,7 +145,7 @@ var declUpdateResult = function(aNode)
             {
             	if (!clresult["noset"])
 	            	modelSetLib(_selectedNode.id, clresult["lib"]);
-                lresultlist = sUTL.evaluatedebug(lsourceJson, ltransform, clresult["lib"] || {}, 100);
+                lresultlist = sUTL.evaluatedebug(lsourceJson, ltransform, clresult["lib"] || {}, 10);
 
 
             }
