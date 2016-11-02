@@ -107,9 +107,9 @@ var declUpdateResult = function(aNode)
         var ldists = modelGetLibDist(_selectedNode.id);
 		var lfullname = modelGetNodeFullNameById(_selectedNode.id);
 		
-        try
-        {
-            var lresult = null;
+//         try
+//         {
+            var lresultlist = [];
 
             var ldecl = {
             	"transform-t": ltransform,
@@ -135,32 +135,50 @@ var declUpdateResult = function(aNode)
 
             if (!clresult)
             {
-              lresult = "** Can't load libs **";
+              lresultlist = ["** Can't load libs **"];
             }
             else if ("fail" in clresult)
             {
-              lresult = clresult["fail"];
+              lresultlist = [clresult["fail"]];
             }
             else
             {
             	if (!clresult["noset"])
 	            	modelSetLib(_selectedNode.id, clresult["lib"]);
-                lresult = sUTL.evaluate(lsourceJson, ltransform, clresult["lib"] || {}, 0);
+                lresultlist = sUTL.evaluatedebug(lsourceJson, ltransform, clresult["lib"] || {}, 100);
+
+
             }
 
-            _edResult.setValue(JSON.stringify(lresult, null, 2));
+			//$("#rngResults").slider('option',{min: 0, max: lresultlist.length});
+			//$("#rngResults").slider('value', lresultlist.length);
+
+			if (!lresultlist.length)
+				lresultlist = [""];
+
+			$("#rngResults").slider({
+				min: 0, 
+				max: lresultlist.length-1, 
+				value: lresultlist.length-1,
+				onChange: function(newValue){
+		            _edResult.setValue(JSON.stringify(lresultlist[newValue], null, 2));
+		            _edResult.gotoLine(0);
+				}
+			});
+
+            _edResult.setValue(JSON.stringify(lresultlist.slice(-1)[0], null, 2));
             _edResult.gotoLine(0);
 
 			NotifyErrorMessage("");
-        }
-        catch (e)
-        {
-            console.log(e);
-            var lerrorMessage = "Result Exception: " + e.message;
-			NotifyErrorMessage(lerrorMessage);
-            _edResult.setValue(lerrorMessage);
-            _edResult.gotoLine(0);
-        }
+//         }
+//         catch (e)
+//         {
+//             console.log(e);
+//             var lerrorMessage = "Result Exception: " + e.message;
+// 			NotifyErrorMessage(lerrorMessage);
+//             _edResult.setValue(lerrorMessage);
+//             _edResult.gotoLine(0);
+//         }
     }
 };
 
@@ -177,6 +195,7 @@ var declSetSelected = function(aNode)
 		  _edSource = setupEditor("edSource");
 		  _edTransform = setupEditor("edTransform");
 		  _edResult = setupEditor("edResult");
+		  _edResult.setReadOnly(true);
 	  }
 	  
 	  _dontUpdate = true;

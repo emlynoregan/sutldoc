@@ -20,6 +20,7 @@
     sUTL.name = 'sUTL.js';
     sUTL.version = '0.0.0';
     sUTL.evaluate = evaluate;
+    sUTL.evaluatedebug = evaluatedebug;
     sUTL.compilelib = compilelib;
 
     function get(obj, key, def)
@@ -48,7 +49,7 @@
             return "unknown"
     }
 
-    function _processPath(startfrom, parentscope, scope, l, src, tt, b, h)
+    function _processPath(startfrom, parentscope, scope, l, src, tt, b, h, p)
     {    
         var la = get(scope, "a", null);
         var lb = get(scope, "b", null);
@@ -148,7 +149,7 @@
     function builtins()
     {
         var retval = {
-            "+": function(parentscope, scope, l, src, tt, b, h)
+            "+": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var a = get(scope, "a", 0);
                 var bb = get(scope, "b", 0);
@@ -157,43 +158,43 @@
                 else
                     return null;
             },
-            "-": function(parentscope, scope, l, src, tt, b, h)
+            "-": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", 0) - get(scope, "b", 0);
+                return get(scope, "a", 0) - get(scope, "b", 0, p);
             },
-            "x": function(parentscope, scope, l, src, tt, b, h)
+            "x": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", 1) * get(scope, "b", 1);
+                return get(scope, "a", 1) * get(scope, "b", 1, p);
             },
-            "/": function(parentscope, scope, l, src, tt, b, h)
+            "/": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", 1) / get(scope, "b", 1);
+                return get(scope, "a", 1) / get(scope, "b", 1, p);
             },
-            "=": function(parentscope, scope, l, src, tt, b, h)
+            "=": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", null) === get(scope, "b", null);
+                return get(scope, "a", null) === get(scope, "b", null, p);
             },
-            "!=": function(parentscope, scope, l, src, tt, b, h)
+            "!=": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", null) !== get(scope, "b", null);
+                return get(scope, "a", null) !== get(scope, "b", null, p);
             },
-            ">=": function(parentscope, scope, l, src, tt, b, h)
+            ">=": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", null) >= get(scope, "b", null);
+                return get(scope, "a", null) >= get(scope, "b", null, p);
             },
-            "<=": function(parentscope, scope, l, src, tt, b, h)
+            "<=": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", null) <= get(scope, "b", null);
+                return get(scope, "a", null) <= get(scope, "b", null, p);
             },
-            ">": function(parentscope, scope, l, src, tt, b, h)
+            ">": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", null) > get(scope, "b", null);
+                return get(scope, "a", null) > get(scope, "b", null, p);
             },
-            "<": function(parentscope, scope, l, src, tt, b, h)
+            "<": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return get(scope, "a", null) < get(scope, "b", null);
+                return get(scope, "a", null) < get(scope, "b", null, p);
             },
-            "&&": function(parentscope, scope, l, src, tt, b, h)
+            "&&": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 if ("a" in scope)
                     if ("b" in scope)
@@ -203,39 +204,39 @@
                 else
                     IsTruthy(get(scope, "b", false));
             },
-            "||": function(parentscope, scope, l, src, tt, b, h)
+            "||": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return IsTruthy(get(scope, "a", false)) || IsTruthy(get(scope, "b", false));
+                return IsTruthy(get(scope, "a", false)) || IsTruthy(get(scope, "b", false, p));
             },
-            "!": function(parentscope, scope, l, src, tt, b, h)
+            "!": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 return ! IsTruthy(get(scope, "b", false));
             },
-            "if": function(parentscope, scope, l, src, tt, b, h)
+            "if": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var retval = null;
                 var condvalue = false;
 
                 if ("cond" in scope)
                 {
-                    condvalue = IsTruthy(_evaluate(parentscope, scope["cond"], l, src, tt, b, h));
+                    condvalue = IsTruthy(_evaluate(parentscope, scope["cond"], l, src, tt, b, h, p));
                 }
                     
 
                 if (condvalue)
                 {
                     if ("true" in scope)
-                        retval = _evaluate(parentscope, scope["true"], l, src, tt, b, h);
+                        retval = _evaluate(parentscope, scope["true"], l, src, tt, b, h, p);
                 }
                 else
                 {
                     if ("false" in scope)
-                        retval = _evaluate(parentscope, scope["false"], l, src, tt, b, h);
+                        retval = _evaluate(parentscope, scope["false"], l, src, tt, b, h, p);
                 }
 
                 return retval;
             },
-            "keys": function(parentscope, scope, l, src, tt, b, h)
+            "keys": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var obj = get(scope, "map", null);
                 if (isObject(obj))
@@ -243,7 +244,7 @@
                 else
                     return null;
             },
-            "values": function(parentscope, scope, l, src, tt, b, h)
+            "values": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var obj = get(scope, "map", null);
                 if (isObject(obj))
@@ -256,7 +257,7 @@
                 else
                     return null;
             },
-            "len": function(parentscope, scope, l, src, tt, b, h)
+            "len": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var item = get(scope, "list", null);
                 if (gettype(item) === "list")
@@ -264,12 +265,12 @@
                 else
                     return 0;
             },
-            "type": function(parentscope, scope, l, src, tt, b, h)
+            "type": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var item = get(scope, "value", null);
                 return gettype(item);
             },
-            "makemap":function(parentscope, scope, l, src, tt, b, h)
+            "makemap":function(parentscope, scope, l, src, tt, b, h, p)
             {
                 retval = {};
                 var item = get(scope, "value", null);
@@ -287,7 +288,7 @@
                 }
                 return retval
             },
-            "reduce": function(parentscope, scope, l, src, tt, b, h)
+            "reduce": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 retval = {}
                 var list = get(scope, "list", null)
@@ -319,34 +320,34 @@
                         accum = _evaluate(
                             s2,
                             t,
-                            l, src, tt, b, h
+                            l, src, tt, b, h, p
                         )
                     } 
                 }
 
                 return accum;
             },
-            "$": function(parentscope, scope, l, src, tt, b, h)
+            "$": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return _processPath(src, parentscope, scope, l, src, tt, b, h)
+                return _processPath(src, parentscope, scope, l, src, tt, b, h, p)
             },
-            "@": function(parentscope, scope, l, src, tt, b, h)
+            "@": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return _processPath(parentscope, parentscope, scope, l, src, tt, b, h)
+                return _processPath(parentscope, parentscope, scope, l, src, tt, b, h, p)
             },
-            "^": function(parentscope, scope, l, src, tt, b, h)
+            "^": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return _processPath(scope, parentscope, scope, l, src, tt, b, h)
+                return _processPath(scope, parentscope, scope, l, src, tt, b, h, p)
             },
-            "*": function(parentscope, scope, l, src, tt, b, h)
+            "*": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return _processPath(l, parentscope, scope, l, src, tt, b, h)
+                return _processPath(l, parentscope, scope, l, src, tt, b, h, p)
             },
-            "~": function(parentscope, scope, l, src, tt, b, h)
+            "~": function(parentscope, scope, l, src, tt, b, h, p)
             {
-                return _processPath(tt, parentscope, scope, l, src, tt, b, h)
+                return _processPath(tt, parentscope, scope, l, src, tt, b, h, p)
             },
-            "%": function(parentscope, scope, l, src, tt, b, h)
+            "%": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var la = get(scope, "a", null)
                 var lb = get(scope, "b", null)
@@ -364,7 +365,7 @@
                         return _doPath([la], lb)
                 }
             },
-            "head": function(parentscope, scope, l, src, tt, b, h)
+            "head": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var lb = get(scope, "b", null)
 
@@ -373,7 +374,7 @@
                 else
                     return null;
             },
-            "tail": function(parentscope, scope, l, src, tt, b, h)
+            "tail": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var lb = get(scope, "b", null)
 
@@ -387,7 +388,7 @@
                 else
                     return null;
             },
-            "split": function(parentscope, scope, l, src, tt, b, h)
+            "split": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var lvalue = get(scope, "value", null)
                 var lsep = get(scope, "sep", ",")
@@ -415,7 +416,7 @@
                 } 
                 return retval;
             },
-            "trim": function(parentscope, scope, l, src, tt, b, h)
+            "trim": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var lvalue = get(scope, "value", null)
                 var retval = null;
@@ -430,7 +431,7 @@
                 } 
                 return retval;
             },
-            "pos": function(parentscope, scope, l, src, tt, b, h)
+            "pos": function(parentscope, scope, l, src, tt, b, h, p)
             {
                 var lvalue = get(scope, "value", null)
                 var lsub = get(scope, "sub", null)
@@ -454,7 +455,7 @@
 
         for (var key in retval)
         {
-            retval["has" + key] = function(parentscope, scope, l, src, tt, b)
+            retval["has" + key] = function(parentscope, scope, l, src, tt, b, p)
             {
                 return true
             }
@@ -464,6 +465,8 @@
     }
 
     var cost = 0;
+    var orig_t = null;
+    var debugresults = [];
 
     function getcost()
     {
@@ -473,6 +476,8 @@
     function clearcost()
     {
         cost = 0;
+        orig_t = null;
+        debugresults = [];
     }
 
     function inccost()
@@ -480,40 +485,137 @@
         cost ++;
     }
 
-    function logenter(msg, s, t, h)
+    function deepcopy(o)
     {
-        if (h > 0)
+    	return JSON.parse(JSON.stringify(o)); // worst thing in the universe
+    }
+    
+    function adddebugresult(t, p)
+    {
+        if (p)
         {
-            console.log("(" + h + "): " + msg)
-            console.log(" - s: " + JSON.stringify(s))
-            console.log(" - t: " + JSON.stringify(t))
+            var retval = null;
+            if (debugresults.length > 0)
+                retval = deepcopy(debugresults.slice(-1)[0]);
+            else
+                retval = deepcopy(orig_t);
+            var tcopy = deepcopy(t)
+
+            var lhs = null;
+            var lhsix = null;
+            var rightp = [];
+            if (p.length)
+            {
+                lhsix = p.slice(-1)
+
+                var leftp = p.slice(0, -1);
+
+                while (!lhs && leftp.length)
+                {
+                    var lgetlhs_t = {
+                         "&": "@",
+                         "head": true,
+                         "args": leftp
+                        }
+
+                    lhs = _evaluateBuiltin(
+                        retval, 
+                        lgetlhs_t, 
+                        {}, 
+                        retval,
+                        lgetlhs_t, 
+                        builtins(), 
+                        null
+                    )
+
+                    if (!lhs && leftp.length)
+                    {
+                        rightp = leftp.slice(-1).concat(rightp);
+                        leftp = leftp.slice(0, -1);
+                    }
+                }
+            }
+
+            if (!(lhs && lhsix))
+                lhs = retval;
+
+            for (var ix in rightp)
+            {
+                lhs[rightp[ix]] = {};
+                lhs = lhs[rightp[ix]];
+            } 
+
+            if (lhs && lhsix)
+                lhs[lhsix] = tcopy
+            else
+                retval = tcopy;
+
+            console.log("push")
+            debugresults.push(retval);
         }
-        inccost();
+    }
+    
+    function logenter(msg, s, t, h, p)
+    {
+    	if (h !== null)
+    	{
+	        if (h > 0)
+	        {
+	            console.log("(" + h + "): " + msg)
+	            console.log(" - s: " + JSON.stringify(s))
+	            console.log(" - t: " + JSON.stringify(t))
+	            console.log(" - p: " + JSON.stringify(p))
+	            
+	            adddebugresult(t, p)
+	        }
+	        inccost();
+    	}
     }
 
-    function logexit(msg, r, h)
+    function logexit(msg, r, h, p)
     {
         if (h > 0)
         {
             console.log("(" + h + "): " + msg)
             console.log(" - r: " + JSON.stringify(r))
+	        
+	        adddebugresult(r, p)
+        }
+    }
+
+    function logdr(r, h, p)
+    {
+        if (h > 0)
+        {
+	        adddebugresult(r, p)
         }
     }
 
     function evaluate(src, tt, l, h) 
     {
         clearcost();
-        var retval = _evaluate(src, tt, l, src, tt, builtins(), h)
+        var retval = _evaluate(src, tt, l, src, tt, builtins(), h, [])
         console.log("Cost: " + getcost())
         return retval;
     }
+
+    function evaluatedebug(src, tt, l, h) 
+    {
+        clearcost();
+        orig_t = tt;
+        logdr(tt, h, []);
+        var retval = _evaluate(src, tt, l, src, tt, builtins(), h, [])
+        console.log("Cost: " + getcost())
+        return debugresults;
+    }
+
 
     function dec(x)
     {
         return x-1
     }
 
-    function _evaluate(s, t, l, src, tt, b, h)
+    function _evaluate(s, t, l, src, tt, b, h, p)
     {
         if (!h) h = 0;
 
@@ -527,54 +629,58 @@
 
         while (!done)
         {
-            logenter("_evaluate: " + counter, s1, t1, h);
+            logenter("_evaluate: " + counter, s1, t1, h, null);
 
             if (isEval(t1))
             {
-                r = _evaluateEval(s1, t1, l1, src, tt, b, dec(h));
+                r = _evaluateEval(s1, t1, l1, src, tt, b, dec(h), p);
                 done = true;
             }
             else if (isEval2(t1))
             {
-                r = _evaluateEval2(s1, t1, l1, src, tt, b, dec(h));
+                r = _evaluateEval2(s1, t1, l1, src, tt, b, dec(h), p);
                 done = true;
             }
             else if (isBuiltinEval(t1))
             {
-                r = _evaluateBuiltin(s1, t1, l1, src, tt, b, dec(h));
+                r = _evaluateBuiltin(s1, t1, l1, src, tt, b, dec(h), p);
                 done = true;
             }
             else if (isQuoteEval(t1))
             {
-                r = _quoteEvaluate(s1, t1["'"], l1, src, tt, b, dec(h));
+                r = _quoteEvaluate(s1, t1["'"], l1, src, tt, b, dec(h), p);
                 done = true;
             }
             else if (isColonEval(t1))
             {
                 r = t1[":"];
+                logdr(r, h, p);
                 done = true;
             }
             else if (isDictTransform(t1))
             {
-                r = _evaluateDict(s1, t1, l1, src, tt, b, dec(h));
+                r = _evaluateDict(s1, t1, l1, src, tt, b, dec(h), p);
                 done = true;
             }
             else if (isArrayBuiltinEval(t1, b))
             {
-                r = _evaluateArrayBuiltin(s1, t1, l1, src, tt, b, dec(h));
+                r = _evaluateArrayBuiltin(s1, t1, l1, src, tt, b, dec(h), p);
                 done = true;
             }
             else if (isListTransform(t1))
             {
                 if (t1.length > 0 && t1[0] === "&&")
-                    r = _flatten(_evaluateList(s1, t1.slice(1), l1, src, tt, b, dec(h)));
+                {
+                    r = _flatten(_evaluateList(s1, t1.slice(1), l1, src, tt, b, dec(h), p));
+                    logdr(r, h, p);
+                }
                 else
-                    r = _evaluateList(s1, t1, l1, src, tt, b, dec(h));
+                    r = _evaluateList(s1, t1, l1, src, tt, b, dec(h), p);
                 done = true;
             }
             else if (isStringBuiltinEval(t1, b))
             {
-                r = _evaluateStringBuiltin(s1, t1, l1, src, tt, b, dec(h));
+                r = _evaluateStringBuiltin(s1, t1, l1, src, tt, b, dec(h), p);
                 done = true;
             }
             else
@@ -586,33 +692,33 @@
             counter++;
         }
 
-        logexit("_evaluate", r, h);
+        logexit("_evaluate", r, h, null);
         return r;
     }
 
-    function _quoteEvaluate(s, t, l, src, tt, b, h)
+    function _quoteEvaluate(s, t, l, src, tt, b, h, p)
     {
-        logenter("_quoteEvaluate", s, t, h);
+        logenter("_quoteEvaluate", s, t, h, null);
         var r;
 
         if (isDoubleQuoteEval(t))
         {
-            r = _evaluate(s, t["''"], l, src, tt, b, dec(h));
+            r = _evaluate(s, t["''"], l, src, tt, b, dec(h), p);
         }
         else if (isDictTransform(t))
         {
-            r = _quoteEvaluateDict(s, t, l, src, tt, b, dec(h));
+            r = _quoteEvaluateDict(s, t, l, src, tt, b, dec(h), p);
         }
         else if (isListTransform(t))
         {
-            r = _quoteEvaluateList(s, t, l, src, tt, b, dec(h));
+            r = _quoteEvaluateList(s, t, l, src, tt, b, dec(h), p);
         }
         else
         {
             r = t; // simple transform
         }
 
-        logexit("_quoteEvaluate", r, h);
+        logexit("_quoteEvaluate", r, h, p);
         return r;
     }
 
@@ -624,7 +730,7 @@
             return null;
     }
 
-    function _evaluateStringBuiltin(s, t, l, src, tt, b, h)
+    function _evaluateStringBuiltin(s, t, l, src, tt, b, h, p)
     {
         var larr = t.split(".");
 
@@ -640,10 +746,10 @@
                 larr2.push(i);
         }
 
-        return _evaluateArrayBuiltin(s, larr2, l, src, tt, b, h)
+        return _evaluateArrayBuiltin(s, larr2, l, src, tt, b, h, p)
     }
     
-    function _evaluateArrayBuiltin(s, t, l, src, tt, b, h)
+    function _evaluateArrayBuiltin(s, t, l, src, tt, b, h, p)
     {
         var lop = t.slice(0, 1)
         if (lop.length)
@@ -658,12 +764,12 @@
             "head": lopChar == "^"
         }
 
-        return _evaluateBuiltin(s, uset, l, src, tt, b, dec(h))
+        return _evaluateBuiltin(s, uset, l, src, tt, b, dec(h), p)
     }
     
-    function _evaluateBuiltin(s, t, l, src, tt, b, h)
+    function _evaluateBuiltin(s, t, l, src, tt, b, h, p)
     {
-        logenter("_evaluateBuiltin", s, t, h)
+        logenter("_evaluateBuiltin", s, t, h, null)
 
         var retval = null;
 
@@ -676,23 +782,23 @@
                     "&": t["&"]
                 }
 
-                retval = _evaluateBuiltinSimple(false, s, uset, l, src, tt, b, dec(h))
+                retval = _evaluateBuiltinSimple(false, s, uset, l, src, tt, b, dec(h), p)
             }
             else if (t["args"].length == 1)
             {
                 var uset = {
                     "&": t["&"],
-                    "b": _evaluate(s, t["args"][0], l, src, tt, b, dec(h))
+                    "b": _evaluate(s, t["args"][0], l, src, tt, b, dec(h), p)
                 }
 
-                retval = _evaluateBuiltinSimple(false, s, uset, l, src, tt, b, dec(h))
+                retval = _evaluateBuiltinSimple(false, s, uset, l, src, tt, b, dec(h), p)
             }
             else
             {
                 // 2 or more items in the args list. Reduce over them
-                var list = _evaluateList(s, t["args"].slice(1), l, src, tt, b, dec(h));
+                var list = _evaluateList(s, t["args"].slice(1), l, src, tt, b, dec(h), p);
                 
-                retval = _evaluate(s, t["args"][0], l, src, tt, b, dec(h));
+                retval = _evaluate(s, t["args"][0], l, src, tt, b, dec(h), p);
 
                 for (var ix in list)
                 {
@@ -705,7 +811,7 @@
                       "notfirst": ix > 0
                     }
 
-                    retval = _evaluateBuiltinSimple(false, s, uset, l, src, tt, b, dec(h))
+                    retval = _evaluateBuiltinSimple(false, s, uset, l, src, tt, b, dec(h), p)
                 } 
             }
 
@@ -719,14 +825,14 @@
         }
         else
         {
-            retval = _evaluateBuiltinSimple(true, s, t, l, src, tt, b, h);
+            retval = _evaluateBuiltinSimple(true, s, t, l, src, tt, b, h, p);
         }
 
-        logexit("_evaluateBuiltin", retval, h)
+        logexit("_evaluateBuiltin", retval, h, p)
         return retval
     }
 
-    function _evaluateBuiltinSimple(needseval, s, t, l, src, tt, b, h)
+    function _evaluateBuiltinSimple(needseval, s, t, l, src, tt, b, h, p)
     {
         var retval = null;
 
@@ -751,7 +857,7 @@
             t2["!"] = ["^*", t["&"]]
             delete t2["&"]
 
-            retval = _evaluateEval(s, t2, l, src, tt, b, dec(h))
+            retval = _evaluateEval(s, t2, l, src, tt, b, dec(h), p)
         } 
         else if (builtinf)
         {
@@ -765,7 +871,7 @@
             var sX;
             if (needseval)
             {
-                sX = _evaluateDict(s, t, l, src, tt, b, dec(h))
+                sX = _evaluateDict(s, t, l, src, tt, b, dec(h), p)
             }
             else
             {
@@ -782,18 +888,48 @@
             var l2 = l;
             if ("*" in t)
             {
-                l2 = _evaluateDict(s, t["*"], l, src, tt, b, dec(h))
+                l2 = _evaluateDict(s, t["*"], l, src, tt, b, dec(h), p)
             }
 
-            retval = builtinf(s, s2, l2, src, tt, b, dec(h))
+            retval = builtinf(s, s2, l2, src, tt, b, dec(h), p)
         }
 
         return retval
     }
 
 
-    function _evaluateEval(s, t, l, src, tt, b, h)
+//     function _evaluateEval(s, t, l, src, tt, b, h, p)
+//     {
+//     	var newscope = {};
+//     	var t2;
+
+//         for (var key in t)
+//         {
+//         	if (key !== "!")
+// 	            newscope[key] = t[key];
+//         }
+        
+//         if (IsTruthy(newscope))
+//         {
+//             t2 = {
+//               "!!": t["!"],
+//               "s": newscope
+//             };
+//         }
+//         else
+//         {
+//             t2 = {
+//               "!!": t["!"]
+//             };
+//         }
+        
+//     	return _evaluateEval2(true, s, t2, l, src, tt, b, h, p);
+// 	}
+
+    function _evaluateEval(s, t, l, src, tt, b, h, p)
     {
+        logenter("_evaluateEval", s, t, h, null);
+
     	var newscope = {};
     	var t2;
 
@@ -803,36 +939,19 @@
 	            newscope[key] = t[key];
         }
         
-        if (IsTruthy(newscope))
-        {
-            t2 = {
-              "!!": t["!"],
-              "s": newscope
-            };
-        }
-        else
-        {
-            t2 = {
-              "!!": t["!"]
-            };
-        }
-        
-    	return _evaluateEval2(s, t2, l, src, tt, b, h);
-	}
-
-    function _evaluateEval2(s, t, l, src, tt, b, h)
-    {
-        logenter("_evaluateEval2", s, t, h);
-
         var retval;
 
-        var t2 = _evaluate(s, t["!!"], l, src, tt, b, dec(h));
+        var newp = p;
+        if (p)
+            newp = p.concat("!");
+        logdr(t["!"], h, newp)
+        var t2 = _evaluate(s, t["!"], l, src, tt, b, dec(h), newp);
 
         var s2 = s;
 
-        if ("s" in t)
+        if (IsTruthy(newscope))
         {
-            var ts = _evaluate(s, t.s, l, src, tt, b, dec(h));
+            var ts = _evaluate(s, newscope, l, src, tt, b, dec(h), p);
 
             if (isObject(ts))
             {
@@ -860,69 +979,142 @@
         var l2 = l;
         if ("*" in t)
         {
-            l2 = _evaluateDict(s, t["*"], l, src, tt, b, dec(h));
+            l2 = _evaluateDict(s, t["*"], l, src, tt, b, dec(h), null);
         }
 
-        retval = _evaluate(s2, t2, l2, src, tt, b, dec(h));
+        retval = _evaluate(s2, t2, l2, src, tt, b, dec(h), newp);
 
-        logexit("_evaluateEval", retval, h);
+        logexit("_evaluateEval", retval, h, p);
         return retval;
     }
 
-    function _evaluateDict(s, t, l, src, tt, b, h)
+    function _evaluateEval2(s, t, l, src, tt, b, h, p)
     {
-        logenter("_evaluateDict", s, t, h);
+        logenter("_evaluateEval2", s, t, h, null);
+
+        var retval;
+
+        var newp = p;
+        if (p)
+            newp = p.concat("!!");
+        logdr(t["!!"], h, newp)
+        var t2 = _evaluate(s, t["!!"], l, src, tt, b, dec(h), newp);
+
+        var s2 = s;
+
+        if ("s" in t)
+        {
+//         	var newp = p;
+//         	if (!derived)
+//         		newp = newp.concat("s");
+         	var newp = p.concat("s");
+        	
+            logdr(t.s, h, newp)
+            var ts = _evaluate(s, t.s, l, src, tt, b, dec(h), newp);
+
+            if (isObject(ts))
+            {
+                s2 = {};
+
+                if (isObject(s))
+                {
+                    for (var key in s)
+                    {
+                        s2[key] = s[key];
+                    }
+                }
+
+                for (var key2 in ts)
+                {
+                    s2[key2] = ts[key2];
+                }
+            }
+            else 
+            {
+                s2 = ts;
+            }
+        }
+		
+        var l2 = l;
+        if ("*" in t)
+        {
+            l2 = _evaluateDict(s, t["*"], l, src, tt, b, dec(h), null);
+        }
+
+        retval = _evaluate(s2, t2, l2, src, tt, b, dec(h), p);
+
+        logexit("_evaluateEval2", retval, h, p);
+        return retval;
+    }
+
+    function _evaluateDict(s, t, l, src, tt, b, h, p)
+    {
+        logenter("_evaluateDict", s, t, h, null);
 
         var retval = {};
         for (var key in t)
         {
             if ((key != "!") && (key != "&"))
-                retval[key] = _evaluate(s, t[key], l, src, tt, b, dec(h));
+            {
+                var newp = p;
+                if (newp)
+                    newp = p.concat(key);
+                retval[key] = _evaluate(s, t[key], l, src, tt, b, dec(h), newp);
+            }
         }
 
-        logexit("_evaluateDict", retval, h)
+        logexit("_evaluateDict", retval, h, p)
         return retval
     }
 
-    function _quoteEvaluateDict(s, t, l, src, tt, b, h)
+    function _quoteEvaluateDict(s, t, l, src, tt, b, h, p)
     {
-        logenter("_quoteEvaluateDict", s, t, h)
+        logenter("_quoteEvaluateDict", s, t, h, null)
 
         var retval = {}
         for (var key in t)
         {
-            retval[key] = _quoteEvaluate(s, t[key], l, src, tt, b, dec(h));
+            var newp = p;
+            if (newp)
+                newp = p.concat(key);
+            retval[key] = _quoteEvaluate(s, t[key], l, src, tt, b, dec(h), newp);
         }
 
-        logexit("_quoteEvaluateDict", retval, h)
+        logexit("_quoteEvaluateDict", retval, h, p)
         return retval
     }
 
-    function _evaluateList(s, t, l, src, tt, b, h)
+    function _evaluateList(s, t, l, src, tt, b, h, p)
     {
-        logenter("_evaluateList", s, t, h)
+        logenter("_evaluateList", s, t, h, null)
 
         var retval = []
         for (var ix in t)
         {
-            retval.push(_evaluate(s, t[ix], l, src, tt, b, dec(h)))
+            var newp = p;
+            if (newp)
+                newp = p.concat(ix);
+            retval.push(_evaluate(s, t[ix], l, src, tt, b, dec(h), newp))
         }
 
-        logexit("_evaluateList", retval, h)
+        logexit("_evaluateList", retval, h, p)
         return retval
     }
 
-    function _quoteEvaluateList(s, t, l, src, tt, b, h)
+    function _quoteEvaluateList(s, t, l, src, tt, b, h, p)
     {
-        logenter("_quoteEvaluateList", s, t, h)
+        logenter("_quoteEvaluateList", s, t, h, null)
 
         var retval = []
         for (var ix in t)
         {
-            retval.push(_quoteEvaluate(s, t[ix], l, src, tt, b, dec(h)))
+            var newp = p;
+            if (newp)
+                newp = p.concat(ix);
+            retval.push(_quoteEvaluate(s, t[ix], l, src, tt, b, dec(h), newp))
         }
 
-        logexit("_quoteEvaluateList", retval, h)
+        logexit("_quoteEvaluateList", retval, h, p)
         return retval
     }
 

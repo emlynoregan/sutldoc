@@ -151,9 +151,20 @@
 			        </div>    
 	            	<div title="Result" style="padding:0px;">	
 		                <div class="ss-item">
-							<div id="edResult" class="editor" name="result" style="min-width: 500px; width:100%; height:300px;"></div>
-		                </div>
-			        </div>    
+							<div id="layoutMain" class="easyui-layout" style="width:100%;height:302px">
+								<div data-options="region:'east'" style="width:100px;height:300px;padding:30px;">
+									<div id="rngResults" class="easyui-slider" style="height:230px;width:100%" data-options="
+												showTip: true,
+												mode: 'v',
+												reversed: true
+											"></div>
+								</div>
+								<div data-options="region:'center'">
+									<div id="edResult" class="editor" name="result" style="min-width: 500px; width:100%; height:300px;"></div>
+								</div>
+							</div>
+					    </div>
+    			    </div>    
 	            </div>
             </form>
           </div>
