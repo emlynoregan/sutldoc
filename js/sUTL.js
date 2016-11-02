@@ -536,22 +536,29 @@
                 }
             }
 
-            if (!(lhs && lhsix))
-                lhs = retval;
-
-            for (var ix in rightp)
+            try
             {
-                lhs[rightp[ix]] = {};
-                lhs = lhs[rightp[ix]];
-            } 
-
-            if (lhs && lhsix)
-                lhs[lhsix] = tcopy
-            else
-                retval = tcopy;
-
-            console.log("push")
-            debugresults.push(retval);
+	            if (!(lhs && lhsix))
+	                lhs = retval;
+	
+	            for (var ix in rightp)
+	            {
+	                lhs[rightp[ix]] = {};
+	                lhs = lhs[rightp[ix]];
+	            } 
+	
+	            if (lhs && lhsix)
+	                lhs[lhsix] = tcopy
+	            else
+	                retval = tcopy;
+	
+	            console.log("push")
+	            debugresults.push(retval);
+            }
+            catch (e)
+            {
+                console.log(e);
+            }
         }
     }
     
