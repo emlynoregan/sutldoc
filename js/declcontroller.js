@@ -145,8 +145,18 @@ var declUpdateResult = function(aNode)
             {
             	if (!clresult["noset"])
 	            	modelSetLib(_selectedNode.id, clresult["lib"]);
-                lresultlist = sUTL.evaluatedebug(lsourceJson, ltransform, clresult["lib"] || {}, 10);
-
+            	
+            	try
+            	{
+            		lresultlist = sUTL.evaluatedebug(lsourceJson, ltransform, clresult["lib"] || {}, 10);
+            	}
+                catch (e)
+                {
+                    console.log(e);
+                    var lerrorMessage = "Result Exception: " + e.message;
+        			NotifyErrorMessage(lerrorMessage);
+        			lresultlist = [lerrorMessage];
+                }
 
             }
 
