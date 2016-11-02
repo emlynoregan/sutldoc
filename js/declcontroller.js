@@ -107,8 +107,8 @@ var declUpdateResult = function(aNode)
         var ldists = modelGetLibDist(_selectedNode.id);
 		var lfullname = modelGetNodeFullNameById(_selectedNode.id);
 		
-//         try
-//         {
+         try
+         {
             var lresultlist = [];
 
             var ldecl = {
@@ -170,15 +170,15 @@ var declUpdateResult = function(aNode)
             _edResult.gotoLine(0);
 
 			NotifyErrorMessage("");
-//         }
-//         catch (e)
-//         {
-//             console.log(e);
-//             var lerrorMessage = "Result Exception: " + e.message;
-// 			NotifyErrorMessage(lerrorMessage);
-//             _edResult.setValue(lerrorMessage);
-//             _edResult.gotoLine(0);
-//         }
+         }
+         catch (e)
+         {
+             console.log(e);
+             var lerrorMessage = "Result Exception: " + e.message;
+ 			NotifyErrorMessage(lerrorMessage);
+             _edResult.setValue(lerrorMessage);
+             _edResult.gotoLine(0);
+         }
     }
 };
 
