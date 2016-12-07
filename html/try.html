@@ -55,7 +55,7 @@
 <div style="display:none" id="inittransform">{{transform}}</div>
 <div style="display:none" id="initsource">{{source}}</div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" src="/js/sUTL.js"></script>
+    <script type="text/javascript" src="js/sUTLHaxeJS/sUTL.js"></script>
     <script>
     var getUrlVars = function()
     {
@@ -156,7 +156,9 @@
 	
 	            var clresult;
 		        
-	            clresult = sUTL.compilelib([ldecl], [llib], false);
+	            var s = new Sutl();
+	            
+	            clresult = s.compilelib([ldecl], [llib]);
 	
 	            if (!clresult)
 	            {
@@ -168,7 +170,7 @@
 	            }
 	            else
 	            {
-	                lresult = sUTL.evaluate(lsource, ldecl["transform-t"], clresult["lib"] || {}, 0);
+	                lresult = s.evaluate(lsource, ldecl["transform-t"], clresult["lib"] || {}, 0);
 	            }
 	
 	            _edResult.setValue(JSON.stringify(lresult, null, 2), edix);
