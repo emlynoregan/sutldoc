@@ -1,6 +1,6 @@
 /*eslint-env jquery, node*/
 
-/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace sUTL lsUTLLibDists NotifyErrorMessage modelGetLibDist modelGetNodeFullNameById modelGetLib modelSetLib*/
+/*globals distNameIsAvailable modelUpdateNode RegisterModelObserver selSetCenterPanelTitle ace Sutl lsUTLLibDists NotifyErrorMessage modelGetLibDist modelGetNodeFullNameById modelGetLib modelSetLib*/
 
 var setupEditor = function(aId)
 {
@@ -124,13 +124,15 @@ var declUpdateResult = function(aNode)
             var llib = modelGetLib(_selectedNode.id);
             
             var clresult;
+            var s = new Sutl();
+            
             if (llib)
             {
             	clresult = {"lib": llib, "noset": true};
         	}
             else
             {
-	            clresult = sUTL.compilelib([ldecl], [ldists], false);
+	            clresult = s.compilelib([ldecl], [ldists]); 
             }
 
             if (!clresult)
@@ -148,7 +150,7 @@ var declUpdateResult = function(aNode)
             	
             	try
             	{
-            		lresultlist = sUTL.evaluatedebug(lsourceJson, ltransform, clresult["lib"] || {}, 10);
+            		lresultlist = [s.evaluate(lsourceJson, ltransform, clresult["lib"] || {}, 0)];
             	}
                 catch (e)
                 {

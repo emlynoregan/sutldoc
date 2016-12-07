@@ -1,0 +1,3 @@
+[submodule "js/sUTLHaxeJS"]
+	path = js/sUTLHaxeJS
+	url = git@github.com:emlynoregan/sUTLHaxeJS.git

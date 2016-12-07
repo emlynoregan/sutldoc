@@ -54,7 +54,12 @@ var sUTLevaluateDecl= function(aSource, aDeclName, aRequiresDeclNames)
 		"requires": lrequires
 	};
 
-    var clresult = sUTL.compilelib([ldecl], lsUTLLibDists, false);
+	//SutlTests.RunTests();
+	
+	var s = new Sutl();
+	
+    var clresult = s.compilelib([ldecl], lsUTLLibDists);
+    //var clresult = sUTL.compilelib([ldecl], lsUTLLibDists, false);
 
     if (!clresult)
     {
@@ -67,7 +72,10 @@ var sUTLevaluateDecl= function(aSource, aDeclName, aRequiresDeclNames)
     else
     {
       var ltransform = ldecl["transform-t"];
-      lresult = sUTL.evaluate(aSource, ltransform, clresult["lib"] || {}, 0);
+      
+      lresult = s.evaluate(aSource, ltransform, clresult["lib"] || {}, 0);
+      
+      //lresult = sUTL.evaluate(aSource, ltransform, clresult["lib"] || {}, 0);
     }
 
 	return lresult;
